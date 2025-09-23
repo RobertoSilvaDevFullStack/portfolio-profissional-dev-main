@@ -46,7 +46,7 @@ interface Project {
   id: string;
   title: string;
   created_at: string;
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 const ManageProjects = () => {
