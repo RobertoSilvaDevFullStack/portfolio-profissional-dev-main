@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -7,6 +6,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -140,7 +140,15 @@ ${post.excerpt || ""}
           className={`${config.color} px-4 py-2 rounded-lg inline-flex items-center justify-center gap-2 transition-all duration-200 hover:scale-105 font-medium border-0 cursor-pointer text-sm min-h-[40px]`}
         >
           <IconComponent size={20} className="flex-shrink-0" />
-          <span style={{ color: '#FFFFFF', display: 'inline-block', whiteSpace: 'nowrap' }}>{config.name}</span>
+          <span
+            style={{
+              color: "#FFFFFF",
+              display: "inline-block",
+              whiteSpace: "nowrap",
+            }}
+          >
+            {config.name}
+          </span>
         </button>
       </DialogTrigger>
 
