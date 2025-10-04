@@ -144,21 +144,25 @@
 
 #### Tarefas:
 
-- [ ] Adicionar campo `status` e `scheduled_at` na tabela posts
-- [ ] Criar componente de seleção de data/hora
-- [ ] Implementar salvamento como rascunho
-- [ ] Adicionar preview antes de agendar
-- [ ] Criar fila de publicação visual
-- [ ] Implementar publicação automática (edge function)
-- [ ] Adicionar filtros por status (rascunho, agendado, publicado)
-- [ ] Criar notificação ao publicar
-- [ ] Testar agendamento e publicação
-- [ ] Commit: "feat: adicionar sistema de agendamento de posts"
+- [x] Adicionar campo `status` e `scheduled_at` na tabela posts
+- [x] Criar componente de seleção de data/hora
+- [x] Implementar salvamento como rascunho
+- [x] Adicionar preview antes de agendar
+- [x] Criar fila de publicação visual
+- [x] Implementar publicação automática (edge function)
+- [x] Adicionar filtros por status (rascunho, agendado, publicado)
+- [x] Criar notificação ao publicar
+- [x] Testar agendamento e publicação
+- [x] Commit: "feat: adicionar sistema de agendamento de posts"
+
+**Status:** ✅ Concluído  
+**Data:** 03/10/2025  
+**Commit:** 4c7b86e
 
 #### Arquivos a criar/modificar:
 
-- `docs/sql-scripts/add-post-scheduling.sql` (novo)
-- `supabase/functions/publish-scheduled-posts/` (novo)
+- `supabase/migrations/0010_adicionar_agendamento_posts.sql` (novo)
+- `supabase/functions/publish-scheduled-posts/index.ts` (novo)
 - `src/components/admin/PostScheduler.tsx` (novo)
 - `src/pages/admin/ManageBlog.tsx` (modificar)
 
