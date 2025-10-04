@@ -1,39 +1,46 @@
-import { useEffect, useState } from 'react';
-import { supabase } from '@/integrations/supabase/client';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { 
-  Mail, 
-  Phone, 
-  User, 
-  MessageSquare, 
-  Trash2, 
+import { useEffect, useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import {
+  Mail,
+  Phone,
+  User,
+  MessageSquare,
+  Trash2,
   ExternalLink,
   Calendar,
   Filter,
-  Download
-} from 'lucide-react';
-import { Skeleton } from '@/components/ui/skeleton';
-import { format, parseISO } from 'date-fns';
-import { ptBR } from 'date-fns/locale';
-import { showSuccess, showError } from '@/utils/toast';
+  Download,
+} from "lucide-react";
+import { Skeleton } from "@/components/ui/skeleton";
+import { format, parseISO } from "date-fns";
+import { ptBR } from "date-fns/locale";
+import { showSuccess, showError } from "@/utils/toast";
 import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from '@/components/ui/dialog';
+} from "@/components/ui/dialog";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
-import DeleteConfirmationDialog from '@/components/admin/DeleteConfirmationDialog';
+} from "@/components/ui/select";
+import DeleteConfirmationDialog from "@/components/admin/DeleteConfirmationDialog";
 
 interface Lead {
   id: string;
@@ -42,7 +49,7 @@ interface Lead {
   phone: string;
   message: string;
   created_at: string;
-  status?: 'new' | 'contacted' | 'qualified' | 'converted';
+  status?: "new" | "contacted" | "qualified" | "converted";
 }
 
 const ManageLeads = () => {
@@ -52,7 +59,7 @@ const ManageLeads = () => {
   const [showDetails, setShowDetails] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [leadToDelete, setLeadToDelete] = useState<string | null>(null);
-  const [filterStatus, setFilterStatus] = useState<string>('all');
+  const [filterStatus, setFilterStatus] = useState<string>("all");
 
   useEffect(() => {
     fetchLeads();
@@ -62,15 +69,15 @@ const ManageLeads = () => {
     setLoading(true);
     try {
       const { data, error } = await supabase
-        .from('leads')
-        .select('*')
-        .order('created_at', { ascending: false });
+        .from("leads")
+        .select("*")
+        .order("created_at", { ascending: false });
 
       if (error) throw error;
       setLeads(data || []);
     } catch (error) {
-      console.error('Erro ao buscar leads:', error);
-      showError('Erro ao carregar leads');
+      console.error("Erro ao buscar leads:", error);
+      showError("Erro ao carregar leads");
     } finally {
       setLoading(false);
     }
@@ -78,15 +85,15 @@ const ManageLeads = () => {
 
   const handleDeleteLead = async (id: string) => {
     try {
-      const { error } = await supabase.from('leads').delete().eq('id', id);
+      const { error } = await supabase.from("leads").delete().eq("id", id);
 
       if (error) throw error;
 
-      setLeads(leads.filter(lead => lead.id !== id));
-      showSuccess('Lead excluído com sucesso!');
+      setLeads(leads.filter((lead) => lead.id !== id));
+      showSuccess("Lead excluído com sucesso!");
     } catch (error) {
-      console.error('Erro ao excluir lead:', error);
-      showError('Erro ao excluir lead');
+      console.error("Erro ao excluir lead:", error);
+      showError("Erro ao excluir lead");
     } finally {
       setDeleteDialogOpen(false);
       setLeadToDelete(null);
@@ -104,44 +111,46 @@ const ManageLeads = () => {
   };
 
   const exportToCSV = () => {
-    const headers = ['Nome', 'Email', 'Telefone', 'Mensagem', 'Data'];
-    const csvData = leads.map(lead => [
+    const headers = ["Nome", "Email", "Telefone", "Mensagem", "Data"];
+    const csvData = leads.map((lead) => [
       lead.name,
       lead.email,
       lead.phone,
       lead.message,
-      format(parseISO(lead.created_at), 'dd/MM/yyyy HH:mm', { locale: ptBR })
+      format(parseISO(lead.created_at), "dd/MM/yyyy HH:mm", { locale: ptBR }),
     ]);
 
     const csvContent = [
-      headers.join(','),
-      ...csvData.map(row => row.map(cell => `"${cell}"`).join(','))
-    ].join('\n');
+      headers.join(","),
+      ...csvData.map((row) => row.map((cell) => `"${cell}"`).join(",")),
+    ].join("\n");
 
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-    const link = document.createElement('a');
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const link = document.createElement("a");
     link.href = URL.createObjectURL(blob);
-    link.download = `leads_${format(new Date(), 'yyyy-MM-dd')}.csv`;
+    link.download = `leads_${format(new Date(), "yyyy-MM-dd")}.csv`;
     link.click();
 
-    showSuccess('Arquivo CSV exportado com sucesso!');
+    showSuccess("Arquivo CSV exportado com sucesso!");
   };
 
   const getStatusBadge = (status?: string) => {
     const statusConfig = {
-      new: { label: 'Novo', className: 'bg-blue-500' },
-      contacted: { label: 'Contatado', className: 'bg-yellow-500' },
-      qualified: { label: 'Qualificado', className: 'bg-green-500' },
-      converted: { label: 'Convertido', className: 'bg-purple-500' },
+      new: { label: "Novo", className: "bg-blue-500" },
+      contacted: { label: "Contatado", className: "bg-yellow-500" },
+      qualified: { label: "Qualificado", className: "bg-green-500" },
+      converted: { label: "Convertido", className: "bg-purple-500" },
     };
 
-    const config = statusConfig[status as keyof typeof statusConfig] || statusConfig.new;
+    const config =
+      statusConfig[status as keyof typeof statusConfig] || statusConfig.new;
     return <Badge className={config.className}>{config.label}</Badge>;
   };
 
-  const filteredLeads = filterStatus === 'all' 
-    ? leads 
-    : leads.filter(lead => (lead.status || 'new') === filterStatus);
+  const filteredLeads =
+    filterStatus === "all"
+      ? leads
+      : leads.filter((lead) => (lead.status || "new") === filterStatus);
 
   return (
     <div>
@@ -149,7 +158,8 @@ const ManageLeads = () => {
         <div>
           <h1 className="text-3xl font-bold text-white">Gerenciar Leads</h1>
           <p className="text-gray-400 mt-2">
-            Total de {leads.length} {leads.length === 1 ? 'lead cadastrado' : 'leads cadastrados'}
+            Total de {leads.length}{" "}
+            {leads.length === 1 ? "lead cadastrado" : "leads cadastrados"}
           </p>
         </div>
         <Button
@@ -198,9 +208,9 @@ const ManageLeads = () => {
             <div className="text-center py-12">
               <MessageSquare className="h-12 w-12 text-gray-600 mx-auto mb-4" />
               <p className="text-gray-400">
-                {filterStatus === 'all' 
-                  ? 'Nenhum lead cadastrado ainda.' 
-                  : 'Nenhum lead encontrado com este filtro.'}
+                {filterStatus === "all"
+                  ? "Nenhum lead cadastrado ainda."
+                  : "Nenhum lead encontrado com este filtro."}
               </p>
             </div>
           ) : (
@@ -217,7 +227,10 @@ const ManageLeads = () => {
               </TableHeader>
               <TableBody>
                 {filteredLeads.map((lead) => (
-                  <TableRow key={lead.id} className="border-gray-700 hover:bg-gray-800/50">
+                  <TableRow
+                    key={lead.id}
+                    className="border-gray-700 hover:bg-gray-800/50"
+                  >
                     <TableCell className="font-medium text-gray-300">
                       <div className="flex items-center gap-2">
                         <User className="h-4 w-4 text-gray-500" />
@@ -227,8 +240,8 @@ const ManageLeads = () => {
                     <TableCell className="text-gray-300">
                       <div className="flex items-center gap-2">
                         <Mail className="h-4 w-4 text-gray-500" />
-                        <a 
-                          href={`mailto:${lead.email}`} 
+                        <a
+                          href={`mailto:${lead.email}`}
                           className="hover:text-light-cyan"
                         >
                           {lead.email}
@@ -238,8 +251,8 @@ const ManageLeads = () => {
                     <TableCell className="text-gray-300">
                       <div className="flex items-center gap-2">
                         <Phone className="h-4 w-4 text-gray-500" />
-                        <a 
-                          href={`tel:${lead.phone}`} 
+                        <a
+                          href={`tel:${lead.phone}`}
                           className="hover:text-light-cyan"
                         >
                           {lead.phone}
@@ -249,12 +262,12 @@ const ManageLeads = () => {
                     <TableCell className="text-gray-300">
                       <div className="flex items-center gap-2">
                         <Calendar className="h-4 w-4 text-gray-500" />
-                        {format(parseISO(lead.created_at), 'dd/MM/yyyy HH:mm', { locale: ptBR })}
+                        {format(parseISO(lead.created_at), "dd/MM/yyyy HH:mm", {
+                          locale: ptBR,
+                        })}
                       </div>
                     </TableCell>
-                    <TableCell>
-                      {getStatusBadge(lead.status)}
-                    </TableCell>
+                    <TableCell>{getStatusBadge(lead.status)}</TableCell>
                     <TableCell className="text-right">
                       <div className="flex justify-end gap-2">
                         <Button
@@ -300,12 +313,20 @@ const ManageLeads = () => {
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <Label className="text-gray-400 text-sm">Nome</Label>
-                  <p className="text-white font-medium mt-1">{selectedLead.name}</p>
+                  <p className="text-white font-medium mt-1">
+                    {selectedLead.name}
+                  </p>
                 </div>
                 <div>
-                  <Label className="text-gray-400 text-sm">Data de Cadastro</Label>
+                  <Label className="text-gray-400 text-sm">
+                    Data de Cadastro
+                  </Label>
                   <p className="text-white font-medium mt-1">
-                    {format(parseISO(selectedLead.created_at), "dd 'de' MMMM 'de' yyyy 'às' HH:mm", { locale: ptBR })}
+                    {format(
+                      parseISO(selectedLead.created_at),
+                      "dd 'de' MMMM 'de' yyyy 'às' HH:mm",
+                      { locale: ptBR }
+                    )}
                   </p>
                 </div>
               </div>
@@ -313,7 +334,7 @@ const ManageLeads = () => {
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <Label className="text-gray-400 text-sm">Email</Label>
-                  <a 
+                  <a
                     href={`mailto:${selectedLead.email}`}
                     className="text-light-cyan font-medium mt-1 block hover:underline"
                   >
@@ -322,7 +343,7 @@ const ManageLeads = () => {
                 </div>
                 <div>
                   <Label className="text-gray-400 text-sm">Telefone</Label>
-                  <a 
+                  <a
                     href={`tel:${selectedLead.phone}`}
                     className="text-light-cyan font-medium mt-1 block hover:underline"
                   >
@@ -334,7 +355,9 @@ const ManageLeads = () => {
               <div>
                 <Label className="text-gray-400 text-sm">Mensagem</Label>
                 <div className="bg-gray-900 p-4 rounded-lg mt-1">
-                  <p className="text-gray-300 whitespace-pre-wrap">{selectedLead.message}</p>
+                  <p className="text-gray-300 whitespace-pre-wrap">
+                    {selectedLead.message}
+                  </p>
                 </div>
               </div>
 
@@ -352,7 +375,10 @@ const ManageLeads = () => {
                   variant="outline"
                   className="flex-1 border-gray-600 hover:bg-gray-700 text-white"
                   onClick={() => {
-                    window.location.href = `https://wa.me/${selectedLead.phone.replace(/\D/g, '')}`;
+                    window.location.href = `https://wa.me/${selectedLead.phone.replace(
+                      /\D/g,
+                      ""
+                    )}`;
                   }}
                 >
                   <Phone className="mr-2 h-4 w-4" />
@@ -379,7 +405,10 @@ const ManageLeads = () => {
 };
 
 // Label component (caso não exista)
-const Label = ({ className, ...props }: React.HTMLAttributes<HTMLLabelElement>) => (
+const Label = ({
+  className,
+  ...props
+}: React.HTMLAttributes<HTMLLabelElement>) => (
   <label className={className} {...props} />
 );
 

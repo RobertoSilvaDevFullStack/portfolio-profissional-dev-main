@@ -134,13 +134,14 @@ ${post.excerpt || ""}
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        <Button
+        <button
+          type="button"
           onClick={handleOpen}
-          className={`${config.color} text-white px-4 py-2 rounded-lg flex items-center gap-2 transition-all duration-200 hover:scale-105 font-medium`}
+          className={`${config.color} px-4 py-2 rounded-lg inline-flex items-center justify-center gap-2 transition-all duration-200 hover:scale-105 font-medium border-0 cursor-pointer text-sm min-h-[40px]`}
         >
-          <IconComponent size={20} />
-          {config.name}
-        </Button>
+          <IconComponent size={20} className="flex-shrink-0" />
+          <span style={{ color: '#FFFFFF', display: 'inline-block', whiteSpace: 'nowrap' }}>{config.name}</span>
+        </button>
       </DialogTrigger>
 
       <DialogContent className="bg-gray-800 border-gray-700 text-white max-w-2xl max-h-[90vh] overflow-y-auto">

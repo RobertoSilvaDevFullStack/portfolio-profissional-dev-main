@@ -1,22 +1,49 @@
-import { NavLink, Outlet, useNavigate } from 'react-router-dom';
-import { LayoutDashboard, Newspaper, Briefcase, LogOut, FileText, MessageSquare } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { supabase } from '@/integrations/supabase/client';
+import { NavLink, Outlet, useNavigate } from "react-router-dom";
+import {
+  LayoutDashboard,
+  Newspaper,
+  Briefcase,
+  LogOut,
+  FileText,
+  MessageSquare,
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { supabase } from "@/integrations/supabase/client";
 
 const AdminLayout = () => {
   const navigate = useNavigate();
 
   const handleSignOut = async () => {
     await supabase.auth.signOut();
-    navigate('/login');
+    navigate("/login");
   };
 
   const navLinks = [
-    { to: '/admin', icon: <LayoutDashboard className="h-5 w-5" />, label: 'Dashboard' },
-    { to: '/admin/content', icon: <FileText className="h-5 w-5" />, label: 'Gerenciar Conteúdo' },
-    { to: '/admin/blog', icon: <Newspaper className="h-5 w-5" />, label: 'Gerenciar Blog' },
-    { to: '/admin/projects', icon: <Briefcase className="h-5 w-5" />, label: 'Gerenciar Projetos' },
-    { to: '/admin/leads', icon: <MessageSquare className="h-5 w-5" />, label: 'Gerenciar Leads' },
+    {
+      to: "/admin",
+      icon: <LayoutDashboard className="h-5 w-5" />,
+      label: "Dashboard",
+    },
+    {
+      to: "/admin/content",
+      icon: <FileText className="h-5 w-5" />,
+      label: "Gerenciar Conteúdo",
+    },
+    {
+      to: "/admin/blog",
+      icon: <Newspaper className="h-5 w-5" />,
+      label: "Gerenciar Blog",
+    },
+    {
+      to: "/admin/projects",
+      icon: <Briefcase className="h-5 w-5" />,
+      label: "Gerenciar Projetos",
+    },
+    {
+      to: "/admin/leads",
+      icon: <MessageSquare className="h-5 w-5" />,
+      label: "Gerenciar Leads",
+    },
   ];
 
   return (
@@ -32,12 +59,12 @@ const AdminLayout = () => {
               <li key={link.to}>
                 <NavLink
                   to={link.to}
-                  end={link.to === '/admin'}
+                  end={link.to === "/admin"}
                   className={({ isActive }) =>
                     `flex items-center gap-3 px-4 py-2 rounded-lg transition-colors ${
                       isActive
-                        ? 'bg-light-cyan text-dark-navy'
-                        : 'hover:bg-gray-800/50'
+                        ? "bg-light-cyan text-dark-navy"
+                        : "hover:bg-gray-800/50"
                     }`
                   }
                 >
