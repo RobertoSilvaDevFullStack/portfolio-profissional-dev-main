@@ -40,17 +40,39 @@ O projeto segue uma estrutura organizada para facilitar a manutenção:
 
 ```
 /
-├── public/              # Arquivos estáticos (imagens, fontes)
+├── docs/                    # 📚 Documentação do projeto
+│   ├── sql-scripts/        # Scripts SQL para Supabase
+│   ├── ADMIN-IMPROVEMENTS.md
+│   ├── IMPLEMENTATION-PLAN.md
+│   ├── LEADS-SYSTEM-README.md
+│   └── SHARE-SYSTEM-README.md
+├── public/                  # 🎨 Arquivos estáticos
+│   ├── favicon.ico
+│   ├── placeholder.svg
+│   └── robots.txt
 ├── src/
-│   ├── components/      # Componentes reutilizáveis (Header, Footer, Cards)
-│   │   └── ui/          # Componentes base do shadcn/ui
-│   ├── pages/           # Páginas principais da aplicação (Index, NotFound)
-│   ├── lib/             # Funções utilitárias
-│   ├── App.tsx          # Configuração de rotas
-│   ├── main.tsx         # Ponto de entrada da aplicação
-│   └── globals.css      # Estilos globais e configuração do Tailwind
-├── package.json         # Dependências e scripts do projeto
-└── tailwind.config.ts   # Configurações do Tailwind CSS
+│   ├── components/          # 🧩 Componentes reutilizáveis
+│   │   ├── admin/          # Componentes do painel admin
+│   │   ├── comments/       # Sistema de comentários
+│   │   └── ui/             # Componentes base shadcn/ui
+│   ├── contexts/           # ⚙️ Contexts do React
+│   ├── hooks/              # 🎣 Custom hooks
+│   ├── integrations/       # 🔌 Integrações externas
+│   │   └── supabase/       # Cliente Supabase
+│   ├── lib/                # 📦 Funções utilitárias
+│   ├── pages/              # 📄 Páginas da aplicação
+│   │   └── admin/          # Painel administrativo
+│   ├── utils/              # 🛠️ Utilitários
+│   ├── App.tsx             # Configuração de rotas
+│   ├── main.tsx            # Ponto de entrada
+│   └── globals.css         # Estilos globais
+├── supabase/               # 🗄️ Configurações Supabase
+│   ├── functions/          # Edge Functions
+│   └── migrations/         # Migrações do banco
+├── .env.example            # Exemplo de variáveis de ambiente
+├── package.json            # Dependências e scripts
+├── tailwind.config.ts      # Configuração Tailwind
+└── vite.config.ts          # Configuração Vite
 ```
 
 ## 🏁 Como Executar Localmente
