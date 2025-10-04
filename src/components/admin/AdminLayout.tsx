@@ -9,14 +9,17 @@ import {
   MessageSquare,
   MessagesSquare,
   Bell,
+  Search,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import NotificationBell from "./NotificationBell";
+import GlobalSearch from "./GlobalSearch";
 
 const AdminLayout = () => {
   const navigate = useNavigate();
   const [userId, setUserId] = useState<string | null>(null);
+  const [searchOpen, setSearchOpen] = useState(false);
 
   useEffect(() => {
     const getUserId = async () => {
@@ -26,6 +29,19 @@ const AdminLayout = () => {
       setUserId(user?.id || null);
     };
     getUserId();
+  }, []);
+
+  // Atalho Ctrl+K / Cmd+K para abrir busca
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === "k") {
+        e.preventDefault();
+        setSearchOpen(true);
+      }
+    };
+
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
   }, []);
 
   const handleSignOut = async () => {
@@ -112,8 +128,22 @@ const AdminLayout = () => {
         </div>
       </aside>
       <div className="flex-1 flex flex-col">
-        {/* Header com NotificationBell */}
-        <header className="bg-dark-navy border-b border-gray-800 px-10 py-4 flex items-center justify-end">
+        {/* Header com busca e notificações */}
+        <header className="bg-dark-navy border-b border-gray-800 px-10 py-4 flex items-center justify-between">
+          {/* Botão de busca global */}
+          <Button
+            variant="outline"
+            className="w-64 justify-start text-gray-400 border-gray-700 hover:bg-gray-800 hover:text-white"
+            onClick={() => setSearchOpen(true)}
+          >
+            <Search className="mr-2 h-4 w-4" />
+            <span>Buscar...</span>
+            <kbd className="ml-auto pointer-events-none inline-flex h-5 select-none items-center gap-1 rounded border border-gray-600 bg-gray-800 px-1.5 font-mono text-[10px] font-medium text-gray-400">
+              <span className="text-xs">⌘</span>K
+            </kbd>
+          </Button>
+
+          {/* Notificações */}
           {userId && <NotificationBell userId={userId} />}
         </header>
 
@@ -122,6 +152,9 @@ const AdminLayout = () => {
           <Outlet />
         </main>
       </div>
+
+      {/* GlobalSearch Dialog */}
+      <GlobalSearch open={searchOpen} onOpenChange={setSearchOpen} />
     </div>
   );
 };

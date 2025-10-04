@@ -521,12 +521,16 @@ const ManageBlog = () => {
               {/* SEO Editor */}
               <SEOEditor
                 title={form.watch("seo_title") || form.watch("title") || ""}
-                description={form.watch("seo_description") || form.watch("excerpt") || ""}
+                description={
+                  form.watch("seo_description") || form.watch("excerpt") || ""
+                }
                 slug={form.watch("slug") || ""}
                 coverImageUrl={form.watch("cover_image_url") || ""}
                 content={form.watch("content") || ""}
                 onTitleChange={(value) => form.setValue("seo_title", value)}
-                onDescriptionChange={(value) => form.setValue("seo_description", value)}
+                onDescriptionChange={(value) =>
+                  form.setValue("seo_description", value)
+                }
                 onSlugChange={(value) => form.setValue("slug", value)}
               />
 

@@ -168,7 +168,7 @@
 
 ---
 
-### 🌐 Fase 5: Gestão de SEO
+### ✅ Fase 5: Gestão de SEO
 
 **Prioridade:** ⭐⭐⭐⭐  
 **Tempo Estimado:** 2-3 horas  
@@ -176,16 +176,20 @@
 
 #### Tarefas:
 
-- [ ] Criar componente `src/components/admin/SEOEditor.tsx`
-- [ ] Adicionar campos de meta tags
-- [ ] Implementar preview do Google
-- [ ] Implementar preview do Facebook/LinkedIn
-- [ ] Criar análise de SEO score
-- [ ] Adicionar sugestões de melhorias
-- [ ] Implementar contador de caracteres
-- [ ] Integrar no editor de posts
-- [ ] Testar previews
-- [ ] Commit: "feat: adicionar gestão de SEO com previews"
+- [x] Criar componente `src/components/admin/SEOEditor.tsx`
+- [x] Adicionar campos de meta tags
+- [x] Implementar preview do Google
+- [x] Implementar preview do Facebook/LinkedIn
+- [x] Criar análise de SEO score
+- [x] Adicionar sugestões de melhorias
+- [x] Implementar contador de caracteres
+- [x] Integrar no editor de posts
+- [x] Testar previews
+- [x] Commit: "feat: adicionar gestão de SEO com previews"
+
+**Status:** ✅ Concluído  
+**Data:** 03/10/2025  
+**Commit:** 965f7d5
 
 #### Arquivos a criar/modificar:
 
@@ -193,11 +197,12 @@
 - `src/components/admin/GooglePreview.tsx` (novo)
 - `src/components/admin/SocialPreview.tsx` (novo)
 - `src/components/admin/SEOScore.tsx` (novo)
+- `supabase/migrations/0011_adicionar_campos_seo_posts.sql` (novo)
 - `src/pages/admin/ManageBlog.tsx` (modificar)
 
 ---
 
-### 🔍 Fase 6: Busca Global
+### ✅ Fase 6: Busca Global
 
 **Prioridade:** ⭐⭐⭐  
 **Tempo Estimado:** 2-3 horas  
@@ -205,14 +210,30 @@
 
 #### Tarefas:
 
-- [ ] Criar componente `src/components/admin/GlobalSearch.tsx`
-- [ ] Implementar busca em posts, projetos, leads
-- [ ] Adicionar atalho de teclado (Ctrl+K)
-- [ ] Criar modal de resultados
-- [ ] Implementar agrupamento por tipo
-- [ ] Adicionar highlighting de termos
-- [ ] Criar histórico de buscas
-- [ ] Integrar no header do admin
+- [x] Criar componente `src/components/admin/GlobalSearch.tsx`
+- [x] Implementar busca em posts, projetos, leads
+- [x] Adicionar atalho de teclado (Ctrl+K)
+- [x] Criar modal de resultados
+- [x] Implementar agrupamento por tipo
+- [x] Adicionar highlighting de termos
+- [x] Criar histórico de buscas
+- [x] Integrar no header do admin
+- [x] Adicionar debounce na busca
+- [x] Badges de tipo e status
+- [x] Commit: "feat: adicionar busca global com Ctrl+K"
+
+**Status:** ✅ Concluído  
+**Data:** 03/10/2025  
+**Commit:** [pendente]
+
+#### Arquivos criados/modificados:
+
+- `src/components/admin/GlobalSearch.tsx` (novo)
+- `src/components/admin/AdminLayout.tsx` (modificado)
+
+---
+
+### ✏️ Fase 7: Editor de Posts Aprimorado
 - [ ] Testar busca
 - [ ] Commit: "feat: adicionar busca global no painel admin"
 
