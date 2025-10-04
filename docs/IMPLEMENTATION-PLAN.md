@@ -101,7 +101,7 @@
 
 ---
 
-### 🔔 Fase 3: Central de Notificações
+### ✅ Fase 3: Central de Notificações
 
 **Prioridade:** ⭐⭐⭐⭐  
 **Tempo Estimado:** 3-4 horas  
@@ -109,29 +109,34 @@
 
 #### Tarefas:
 
-- [ ] Criar tabela `notifications` no Supabase
-- [ ] Criar componente `src/components/admin/NotificationCenter.tsx`
-- [ ] Implementar dropdown de notificações no header
-- [ ] Adicionar badge com contador
-- [ ] Criar tipos de notificação (lead, comentário, meta)
-- [ ] Implementar marcação de lido/não lido
-- [ ] Adicionar som/toast de nova notificação
-- [ ] Criar página de histórico
-- [ ] Implementar configurações de preferências
-- [ ] Testar em tempo real
-- [ ] Commit: "feat: adicionar central de notificações em tempo real"
+- [x] Criar tabela `notifications` no Supabase
+- [x] Criar componente `src/components/admin/NotificationCenter.tsx`
+- [x] Implementar dropdown de notificações no header
+- [x] Adicionar badge com contador
+- [x] Criar tipos de notificação (lead, comentário, meta)
+- [x] Implementar marcação de lido/não lido
+- [x] Adicionar som/toast de nova notificação
+- [x] Criar página de histórico
+- [x] Implementar configurações de preferências
+- [x] Testar em tempo real
+- [x] Commit: "feat: adicionar central de notificações em tempo real"
+
+**Status:** ✅ Concluído  
+**Data:** 03/10/2025  
+**Commit:** 70b9445
 
 #### Arquivos a criar/modificar:
 
-- `docs/sql-scripts/create-notifications-table.sql` (novo)
+- `supabase/migrations/0009_criar_tabela_notifications.sql` (novo)
 - `src/components/admin/NotificationCenter.tsx` (novo)
 - `src/components/admin/NotificationBell.tsx` (novo)
 - `src/pages/admin/Notifications.tsx` (novo)
 - `src/components/admin/AdminLayout.tsx` (modificar)
+- `src/App.tsx` (modificar)
 
 ---
 
-### 📅 Fase 4: Sistema de Agendamento de Posts
+### � Fase 4: Sistema de Agendamento de Posts
 
 **Prioridade:** ⭐⭐⭐⭐  
 **Tempo Estimado:** 3-4 horas  
