@@ -61,12 +61,42 @@ const CustomDashboard = () => {
   const [showSettings, setShowSettings] = useState(false);
   const [layouts, setLayouts] = useState<{ lg: Layout[] }>({ lg: [] });
   const [widgets, setWidgets] = useState<WidgetConfig[]>([
-    { id: "stats-visits", title: "Visitas (30d)", icon: <TrendingUp className="h-4 w-4" />, visible: true },
-    { id: "stats-posts", title: "Total de Posts", icon: <FileText className="h-4 w-4" />, visible: true },
-    { id: "stats-projects", title: "Total de Projetos", icon: <Briefcase className="h-4 w-4" />, visible: true },
-    { id: "stats-leads", title: "Novos Leads", icon: <MessageSquare className="h-4 w-4" />, visible: true },
-    { id: "chart-visits", title: "Gráfico de Visitas", icon: <BarChart3 className="h-4 w-4" />, visible: true },
-    { id: "chart-distribution", title: "Distribuição", icon: <PieChart className="h-4 w-4" />, visible: true },
+    {
+      id: "stats-visits",
+      title: "Visitas (30d)",
+      icon: <TrendingUp className="h-4 w-4" />,
+      visible: true,
+    },
+    {
+      id: "stats-posts",
+      title: "Total de Posts",
+      icon: <FileText className="h-4 w-4" />,
+      visible: true,
+    },
+    {
+      id: "stats-projects",
+      title: "Total de Projetos",
+      icon: <Briefcase className="h-4 w-4" />,
+      visible: true,
+    },
+    {
+      id: "stats-leads",
+      title: "Novos Leads",
+      icon: <MessageSquare className="h-4 w-4" />,
+      visible: true,
+    },
+    {
+      id: "chart-visits",
+      title: "Gráfico de Visitas",
+      icon: <BarChart3 className="h-4 w-4" />,
+      visible: true,
+    },
+    {
+      id: "chart-distribution",
+      title: "Distribuição",
+      icon: <PieChart className="h-4 w-4" />,
+      visible: true,
+    },
   ]);
 
   useEffect(() => {
@@ -109,12 +139,42 @@ const CustomDashboard = () => {
     localStorage.removeItem("dashboard-widgets");
     loadDashboardConfig();
     setWidgets([
-      { id: "stats-visits", title: "Visitas (30d)", icon: <TrendingUp className="h-4 w-4" />, visible: true },
-      { id: "stats-posts", title: "Total de Posts", icon: <FileText className="h-4 w-4" />, visible: true },
-      { id: "stats-projects", title: "Total de Projetos", icon: <Briefcase className="h-4 w-4" />, visible: true },
-      { id: "stats-leads", title: "Novos Leads", icon: <MessageSquare className="h-4 w-4" />, visible: true },
-      { id: "chart-visits", title: "Gráfico de Visitas", icon: <BarChart3 className="h-4 w-4" />, visible: true },
-      { id: "chart-distribution", title: "Distribuição", icon: <PieChart className="h-4 w-4" />, visible: true },
+      {
+        id: "stats-visits",
+        title: "Visitas (30d)",
+        icon: <TrendingUp className="h-4 w-4" />,
+        visible: true,
+      },
+      {
+        id: "stats-posts",
+        title: "Total de Posts",
+        icon: <FileText className="h-4 w-4" />,
+        visible: true,
+      },
+      {
+        id: "stats-projects",
+        title: "Total de Projetos",
+        icon: <Briefcase className="h-4 w-4" />,
+        visible: true,
+      },
+      {
+        id: "stats-leads",
+        title: "Novos Leads",
+        icon: <MessageSquare className="h-4 w-4" />,
+        visible: true,
+      },
+      {
+        id: "chart-visits",
+        title: "Gráfico de Visitas",
+        icon: <BarChart3 className="h-4 w-4" />,
+        visible: true,
+      },
+      {
+        id: "chart-distribution",
+        title: "Distribuição",
+        icon: <PieChart className="h-4 w-4" />,
+        visible: true,
+      },
     ]);
     showSuccess("Dashboard resetado para o padrão!");
   };
@@ -244,9 +304,14 @@ const CustomDashboard = () => {
         );
       case "chart-visits":
         return (
-          <Card key={widgetId} className="bg-dark-navy/50 border-gray-700 h-full">
+          <Card
+            key={widgetId}
+            className="bg-dark-navy/50 border-gray-700 h-full"
+          >
             <CardHeader>
-              <CardTitle className="text-white">Visitas dos Últimos 30 Dias</CardTitle>
+              <CardTitle className="text-white">
+                Visitas dos Últimos 30 Dias
+              </CardTitle>
             </CardHeader>
             <CardContent>
               {loading ? (
@@ -259,9 +324,14 @@ const CustomDashboard = () => {
         );
       case "chart-distribution":
         return (
-          <Card key={widgetId} className="bg-dark-navy/50 border-gray-700 h-full">
+          <Card
+            key={widgetId}
+            className="bg-dark-navy/50 border-gray-700 h-full"
+          >
             <CardHeader>
-              <CardTitle className="text-white">Distribuição de Conteúdo</CardTitle>
+              <CardTitle className="text-white">
+                Distribuição de Conteúdo
+              </CardTitle>
             </CardHeader>
             <CardContent className="flex items-center justify-center">
               {loading ? (
@@ -273,7 +343,10 @@ const CustomDashboard = () => {
                       <div className="h-3 w-3 rounded-full bg-blue-500"></div>
                       <span className="text-sm text-gray-400">Posts</span>
                     </div>
-                    <Badge variant="outline" className="bg-blue-500/20 text-blue-300">
+                    <Badge
+                      variant="outline"
+                      className="bg-blue-500/20 text-blue-300"
+                    >
                       {stats?.posts ?? 0}
                     </Badge>
                   </div>
@@ -282,7 +355,10 @@ const CustomDashboard = () => {
                       <div className="h-3 w-3 rounded-full bg-green-500"></div>
                       <span className="text-sm text-gray-400">Projetos</span>
                     </div>
-                    <Badge variant="outline" className="bg-green-500/20 text-green-300">
+                    <Badge
+                      variant="outline"
+                      className="bg-green-500/20 text-green-300"
+                    >
                       {stats?.projects ?? 0}
                     </Badge>
                   </div>
@@ -291,7 +367,10 @@ const CustomDashboard = () => {
                       <div className="h-3 w-3 rounded-full bg-yellow-500"></div>
                       <span className="text-sm text-gray-400">Leads</span>
                     </div>
-                    <Badge variant="outline" className="bg-yellow-500/20 text-yellow-300">
+                    <Badge
+                      variant="outline"
+                      className="bg-yellow-500/20 text-yellow-300"
+                    >
                       {stats?.leads ?? 0}
                     </Badge>
                   </div>
