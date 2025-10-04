@@ -19,6 +19,7 @@ import {
 import DeleteConfirmationDialog from "@/components/admin/DeleteConfirmationDialog";
 import PostScheduler from "@/components/admin/PostScheduler";
 import SEOEditor from "@/components/admin/SEOEditor";
+import RichTextEditor from "@/components/admin/RichTextEditor";
 import {
   Dialog,
   DialogContent,
@@ -507,10 +508,11 @@ const ManageBlog = () => {
                       Conteúdo (HTML - usado se não houver carrossel)
                     </FormLabel>
                     <FormControl>
-                      <Textarea
-                        {...field}
-                        rows={10}
-                        className="bg-gray-700 border-gray-600"
+                      <RichTextEditor
+                        value={field.value || ""}
+                        onChange={field.onChange}
+                        placeholder="Escreva o conteúdo do seu post aqui..."
+                        onSave={() => form.handleSubmit(onSubmit)()}
                       />
                     </FormControl>
                     <FormMessage />

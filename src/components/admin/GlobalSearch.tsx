@@ -68,7 +68,8 @@ const GlobalSearch = ({ open, onOpenChange }: GlobalSearchProps) => {
         .limit(5);
 
       if (postsError) console.error("Erro ao buscar posts:", postsError);
-      if (projectsError) console.error("Erro ao buscar projetos:", projectsError);
+      if (projectsError)
+        console.error("Erro ao buscar projetos:", projectsError);
       if (leadsError) console.error("Erro ao buscar leads:", leadsError);
 
       const allResults: SearchResult[] = [
@@ -204,16 +205,13 @@ const GlobalSearch = ({ open, onOpenChange }: GlobalSearchProps) => {
   };
 
   // Agrupar resultados por tipo
-  const groupedResults = results.reduce(
-    (acc, result) => {
-      if (!acc[result.type]) {
-        acc[result.type] = [];
-      }
-      acc[result.type].push(result);
-      return acc;
-    },
-    {} as Record<string, SearchResult[]>
-  );
+  const groupedResults = results.reduce((acc, result) => {
+    if (!acc[result.type]) {
+      acc[result.type] = [];
+    }
+    acc[result.type].push(result);
+    return acc;
+  }, {} as Record<string, SearchResult[]>);
 
   return (
     <CommandDialog open={open} onOpenChange={onOpenChange}>

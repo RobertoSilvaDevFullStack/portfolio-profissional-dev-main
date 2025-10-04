@@ -224,7 +224,7 @@
 
 **Status:** ✅ Concluído  
 **Data:** 03/10/2025  
-**Commit:** [pendente]
+**Commit:** 873aee2
 
 #### Arquivos criados/modificados:
 
@@ -234,18 +234,41 @@
 ---
 
 ### ✏️ Fase 7: Editor de Posts Aprimorado
-- [ ] Testar busca
-- [ ] Commit: "feat: adicionar busca global no painel admin"
 
-#### Arquivos a criar/modificar:
+**Prioridade:** ⭐⭐⭐⭐  
+**Tempo Estimado:** 3-4 horas  
+**Complexidade:** Alta
 
-- `src/components/admin/GlobalSearch.tsx` (novo)
-- `src/components/admin/SearchResults.tsx` (novo)
-- `src/components/admin/AdminLayout.tsx` (modificar)
+#### Tarefas:
+
+- [x] Instalar dependências do editor (react-quill ou similar)
+- [x] Criar componente `src/components/admin/RichTextEditor.tsx`
+- [x] Implementar toolbar com formatação
+- [x] Adicionar suporte a Markdown
+- [x] Implementar preview em tempo real
+- [x] Adicionar upload de imagens inline
+- [x] Criar atalhos de teclado (Ctrl+B, Ctrl+I, etc)
+- [x] Implementar contador de palavras
+- [x] Adicionar auto-save (draft automático)
+- [x] Integrar no ManageBlog.tsx
+- [x] Criar MarkdownPreview.tsx
+- [x] Testar todas as funcionalidades
+- [x] Commit: "feat: adicionar editor de posts aprimorado com WYSIWYG"
+
+**Status:** ✅ Concluído  
+**Data:** 03/10/2025  
+**Commit:** [pendente]
+
+#### Arquivos criados/modificados:
+
+- `src/components/admin/RichTextEditor.tsx` (novo)
+- `src/components/admin/MarkdownPreview.tsx` (novo)
+- `src/pages/admin/ManageBlog.tsx` (modificar)
+- `package.json` (adicionar dependências)
 
 ---
 
-### 👤 Fase 7: Perfil do Administrador
+### � Fase 8: Backup e Restauração
 
 **Prioridade:** ⭐⭐⭐  
 **Tempo Estimado:** 2-3 horas  
