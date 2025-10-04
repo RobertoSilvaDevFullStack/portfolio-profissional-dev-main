@@ -11,6 +11,7 @@ import {
   Bell,
   Search,
   Database,
+  ScrollText,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
@@ -90,6 +91,11 @@ const AdminLayout = () => {
       to: "/admin/backup",
       icon: <Database className="h-5 w-5" />,
       label: "Backup",
+    },
+    {
+      to: "/admin/audit-logs",
+      icon: <ScrollText className="h-5 w-5" />,
+      label: "Logs de Auditoria",
     },
   ];
 
