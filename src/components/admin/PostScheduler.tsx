@@ -1,40 +1,44 @@
-import { useState } from 'react';
-import { Calendar as CalendarIcon, Clock } from 'lucide-react';
-import { format } from 'date-fns';
-import { ptBR } from 'date-fns/locale';
-import { Button } from '@/components/ui/button';
-import { Calendar } from '@/components/ui/calendar';
+import { useState } from "react";
+import { Calendar as CalendarIcon, Clock } from "lucide-react";
+import { format } from "date-fns";
+import { ptBR } from "date-fns/locale";
+import { Button } from "@/components/ui/button";
+import { Calendar } from "@/components/ui/calendar";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from '@/components/ui/popover';
+} from "@/components/ui/popover";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
-import { Label } from '@/components/ui/label';
-import { Badge } from '@/components/ui/badge';
-import { cn } from '@/lib/utils';
+} from "@/components/ui/select";
+import { Label } from "@/components/ui/label";
+import { Badge } from "@/components/ui/badge";
+import { cn } from "@/lib/utils";
 
 interface PostSchedulerProps {
   scheduledAt?: Date;
   onScheduleChange: (date: Date | undefined) => void;
-  status?: 'draft' | 'scheduled' | 'published' | 'archived';
+  status?: "draft" | "scheduled" | "published" | "archived";
 }
 
-const PostScheduler = ({ scheduledAt, onScheduleChange, status }: PostSchedulerProps) => {
+const PostScheduler = ({
+  scheduledAt,
+  onScheduleChange,
+  status,
+}: PostSchedulerProps) => {
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(
     scheduledAt ? new Date(scheduledAt) : undefined
   );
   const [selectedHour, setSelectedHour] = useState<string>(
-    scheduledAt ? format(new Date(scheduledAt), 'HH') : '10'
+    scheduledAt ? format(new Date(scheduledAt), "HH") : "10"
   );
   const [selectedMinute, setSelectedMinute] = useState<string>(
-    scheduledAt ? format(new Date(scheduledAt), 'mm') : '00'
+    scheduledAt ? format(new Date(scheduledAt), "mm") : "00"
   );
 
   const handleDateSelect = (date: Date | undefined) => {
@@ -71,34 +75,46 @@ const PostScheduler = ({ scheduledAt, onScheduleChange, status }: PostSchedulerP
     onScheduleChange(undefined);
   };
 
-  const hours = Array.from({ length: 24 }, (_, i) => i.toString().padStart(2, '0'));
-  const minutes = Array.from({ length: 12 }, (_, i) => (i * 5).toString().padStart(2, '0'));
+  const hours = Array.from({ length: 24 }, (_, i) =>
+    i.toString().padStart(2, "0")
+  );
+  const minutes = Array.from({ length: 12 }, (_, i) =>
+    (i * 5).toString().padStart(2, "0")
+  );
 
   const getStatusInfo = () => {
     if (!scheduledAt) {
-      return { badge: null, text: 'Publicar agora' };
+      return { badge: null, text: "Publicar agora" };
     }
 
     const scheduleDate = new Date(scheduledAt);
     const now = new Date();
-    
-    if (status === 'published') {
+
+    if (status === "published") {
       return {
-        badge: <Badge className="bg-green-500/20 text-green-400">Publicado</Badge>,
-        text: format(scheduleDate, "dd 'de' MMMM 'às' HH:mm", { locale: ptBR })
+        badge: (
+          <Badge className="bg-green-500/20 text-green-400">Publicado</Badge>
+        ),
+        text: format(scheduleDate, "dd 'de' MMMM 'às' HH:mm", { locale: ptBR }),
       };
     }
 
     if (scheduleDate <= now) {
       return {
-        badge: <Badge className="bg-yellow-500/20 text-yellow-400">Aguardando publicação</Badge>,
-        text: 'Será publicado em breve'
+        badge: (
+          <Badge className="bg-yellow-500/20 text-yellow-400">
+            Aguardando publicação
+          </Badge>
+        ),
+        text: "Será publicado em breve",
       };
     }
 
     return {
       badge: <Badge className="bg-blue-500/20 text-blue-400">Agendado</Badge>,
-      text: `${format(scheduleDate, "dd 'de' MMMM 'às' HH:mm", { locale: ptBR })}`
+      text: `${format(scheduleDate, "dd 'de' MMMM 'às' HH:mm", {
+        locale: ptBR,
+      })}`,
     };
   };
 
@@ -115,7 +131,7 @@ const PostScheduler = ({ scheduledAt, onScheduleChange, status }: PostSchedulerP
         <div className="flex items-center gap-2 p-3 bg-gray-800/50 rounded-lg border border-gray-700">
           <CalendarIcon className="h-4 w-4 text-gray-400" />
           <span className="text-sm text-gray-300">{statusInfo.text}</span>
-          {status !== 'published' && (
+          {status !== "published" && (
             <Button
               variant="ghost"
               size="sm"
@@ -130,7 +146,9 @@ const PostScheduler = ({ scheduledAt, onScheduleChange, status }: PostSchedulerP
 
       <div className="grid gap-4">
         <div>
-          <Label className="text-gray-400 text-sm mb-2 block">Selecione a Data</Label>
+          <Label className="text-gray-400 text-sm mb-2 block">
+            Selecione a Data
+          </Label>
           <Popover>
             <PopoverTrigger asChild>
               <Button
@@ -142,18 +160,25 @@ const PostScheduler = ({ scheduledAt, onScheduleChange, status }: PostSchedulerP
               >
                 <CalendarIcon className="mr-2 h-4 w-4" />
                 {selectedDate ? (
-                  format(selectedDate, "dd 'de' MMMM 'de' yyyy", { locale: ptBR })
+                  format(selectedDate, "dd 'de' MMMM 'de' yyyy", {
+                    locale: ptBR,
+                  })
                 ) : (
                   <span>Escolha uma data</span>
                 )}
               </Button>
             </PopoverTrigger>
-            <PopoverContent className="w-auto p-0 bg-gray-800 border-gray-700" align="start">
+            <PopoverContent
+              className="w-auto p-0 bg-gray-800 border-gray-700"
+              align="start"
+            >
               <Calendar
                 mode="single"
                 selected={selectedDate}
                 onSelect={handleDateSelect}
-                disabled={(date) => date < new Date(new Date().setHours(0, 0, 0, 0))}
+                disabled={(date) =>
+                  date < new Date(new Date().setHours(0, 0, 0, 0))
+                }
                 initialFocus
                 className="bg-gray-800"
               />
@@ -202,7 +227,8 @@ const PostScheduler = ({ scheduledAt, onScheduleChange, status }: PostSchedulerP
       {selectedDate && (
         <div className="p-3 bg-blue-500/10 border border-blue-500/30 rounded-lg">
           <p className="text-sm text-blue-400">
-            <strong>Atenção:</strong> O post será publicado automaticamente na data e hora selecionadas.
+            <strong>Atenção:</strong> O post será publicado automaticamente na
+            data e hora selecionadas.
           </p>
         </div>
       )}

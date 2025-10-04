@@ -20,7 +20,9 @@ const AdminLayout = () => {
 
   useEffect(() => {
     const getUserId = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
       setUserId(user?.id || null);
     };
     getUserId();
@@ -114,7 +116,7 @@ const AdminLayout = () => {
         <header className="bg-dark-navy border-b border-gray-800 px-10 py-4 flex items-center justify-end">
           {userId && <NotificationBell userId={userId} />}
         </header>
-        
+
         {/* Main Content */}
         <main className="flex-1 p-10 overflow-auto">
           <Outlet />

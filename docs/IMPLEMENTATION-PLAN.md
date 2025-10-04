@@ -76,7 +76,7 @@
 
 - `src/components/admin/AdvancedAnalytics.tsx` (novo)
 - `src/pages/admin/Dashboard.tsx` (modificar)  
-**Complexidade:** Média
+  **Complexidade:** Média
 
 #### Tarefas:
 

@@ -1,28 +1,28 @@
-import { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { 
-  Select, 
-  SelectContent, 
-  SelectItem, 
-  SelectTrigger, 
-  SelectValue 
-} from '@/components/ui/select';
-import { 
-  LineChart, 
-  Line, 
+import { useState } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  LineChart,
+  Line,
   BarChart,
   Bar,
-  XAxis, 
-  YAxis, 
-  CartesianGrid, 
-  Tooltip, 
-  Legend, 
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
   ResponsiveContainer,
   PieChart,
   Pie,
-  Cell
-} from 'recharts';
-import { TrendingUp, TrendingDown, Calendar, Users, Eye } from 'lucide-react';
+  Cell,
+} from "recharts";
+import { TrendingUp, TrendingDown, Calendar, Users, Eye } from "lucide-react";
 
 interface AnalyticsData {
   visitData: Array<{ date: string; visits: number; previousPeriod?: number }>;
@@ -47,11 +47,13 @@ interface AdvancedAnalyticsProps {
   data: AnalyticsData;
 }
 
-const COLORS = ['#00C2E8', '#8B5CF6', '#F59E0B', '#10B981', '#EF4444'];
+const COLORS = ["#00C2E8", "#8B5CF6", "#F59E0B", "#10B981", "#EF4444"];
 
 const AdvancedAnalytics = ({ data }: AdvancedAnalyticsProps) => {
-  const [periodComparison, setPeriodComparison] = useState<'7' | '30' | '90'>('30');
-  const [chartType, setChartType] = useState<'line' | 'bar'>('line');
+  const [periodComparison, setPeriodComparison] = useState<"7" | "30" | "90">(
+    "30"
+  );
+  const [chartType, setChartType] = useState<"line" | "bar">("line");
 
   const calculateTrend = (current: number, previous: number) => {
     if (previous === 0) return 0;
@@ -61,8 +63,16 @@ const AdvancedAnalytics = ({ data }: AdvancedAnalyticsProps) => {
   const formatTrend = (trend: number) => {
     const isPositive = trend > 0;
     return (
-      <div className={`flex items-center gap-1 ${isPositive ? 'text-green-500' : 'text-red-500'}`}>
-        {isPositive ? <TrendingUp className="h-4 w-4" /> : <TrendingDown className="h-4 w-4" />}
+      <div
+        className={`flex items-center gap-1 ${
+          isPositive ? "text-green-500" : "text-red-500"
+        }`}
+      >
+        {isPositive ? (
+          <TrendingUp className="h-4 w-4" />
+        ) : (
+          <TrendingDown className="h-4 w-4" />
+        )}
         <span className="text-sm font-medium">
           {Math.abs(trend).toFixed(1)}%
         </span>
@@ -70,7 +80,15 @@ const AdvancedAnalytics = ({ data }: AdvancedAnalyticsProps) => {
     );
   };
 
-  const CustomTooltip = ({ active, payload, label }: { active?: boolean; payload?: Array<{ name: string; value: number; color: string }>; label?: string }) => {
+  const CustomTooltip = ({
+    active,
+    payload,
+    label,
+  }: {
+    active?: boolean;
+    payload?: Array<{ name: string; value: number; color: string }>;
+    label?: string;
+  }) => {
     if (active && payload && payload.length) {
       return (
         <div className="bg-gray-800 border border-gray-700 p-3 rounded-lg shadow-lg">
@@ -93,7 +111,12 @@ const AdvancedAnalytics = ({ data }: AdvancedAnalyticsProps) => {
         <div className="flex items-center gap-2">
           <Calendar className="h-5 w-5 text-gray-400" />
           <span className="text-sm text-gray-400">Período:</span>
-          <Select value={periodComparison} onValueChange={(value: '7' | '30' | '90') => setPeriodComparison(value)}>
+          <Select
+            value={periodComparison}
+            onValueChange={(value: "7" | "30" | "90") =>
+              setPeriodComparison(value)
+            }
+          >
             <SelectTrigger className="w-[140px] bg-gray-800 border-gray-600 text-white">
               <SelectValue />
             </SelectTrigger>
@@ -107,7 +130,10 @@ const AdvancedAnalytics = ({ data }: AdvancedAnalyticsProps) => {
 
         <div className="flex items-center gap-2">
           <span className="text-sm text-gray-400">Visualização:</span>
-          <Select value={chartType} onValueChange={(value: 'line' | 'bar') => setChartType(value)}>
+          <Select
+            value={chartType}
+            onValueChange={(value: "line" | "bar") => setChartType(value)}
+          >
             <SelectTrigger className="w-[120px] bg-gray-800 border-gray-600 text-white">
               <SelectValue />
             </SelectTrigger>
@@ -135,7 +161,8 @@ const AdvancedAnalytics = ({ data }: AdvancedAnalyticsProps) => {
                   {data.conversionData.conversionRate.toFixed(1)}%
                 </p>
                 <p className="text-xs text-gray-400 mt-1">
-                  {data.conversionData.leads} leads / {data.conversionData.visits} visitas
+                  {data.conversionData.leads} leads /{" "}
+                  {data.conversionData.visits} visitas
                 </p>
               </div>
               {formatTrend(data.conversionData.trend)}
@@ -198,62 +225,51 @@ const AdvancedAnalytics = ({ data }: AdvancedAnalyticsProps) => {
         </CardHeader>
         <CardContent>
           <ResponsiveContainer width="100%" height={350}>
-            {chartType === 'line' ? (
+            {chartType === "line" ? (
               <LineChart data={data.visitData}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
-                <XAxis 
-                  dataKey="date" 
+                <XAxis
+                  dataKey="date"
                   stroke="#9CA3AF"
-                  style={{ fontSize: '12px' }}
+                  style={{ fontSize: "12px" }}
                 />
-                <YAxis 
-                  stroke="#9CA3AF"
-                  style={{ fontSize: '12px' }}
-                />
+                <YAxis stroke="#9CA3AF" style={{ fontSize: "12px" }} />
                 <Tooltip content={<CustomTooltip />} />
-                <Legend 
-                  wrapperStyle={{ fontSize: '14px' }}
-                  iconType="line"
-                />
-                <Line 
-                  type="monotone" 
-                  dataKey="visits" 
-                  stroke="#00C2E8" 
+                <Legend wrapperStyle={{ fontSize: "14px" }} iconType="line" />
+                <Line
+                  type="monotone"
+                  dataKey="visits"
+                  stroke="#00C2E8"
                   strokeWidth={2}
                   name="Período Atual"
-                  dot={{ fill: '#00C2E8', r: 4 }}
+                  dot={{ fill: "#00C2E8", r: 4 }}
                   activeDot={{ r: 6 }}
                 />
                 {data.visitData[0]?.previousPeriod !== undefined && (
-                  <Line 
-                    type="monotone" 
-                    dataKey="previousPeriod" 
-                    stroke="#8B5CF6" 
+                  <Line
+                    type="monotone"
+                    dataKey="previousPeriod"
+                    stroke="#8B5CF6"
                     strokeWidth={2}
                     strokeDasharray="5 5"
                     name="Período Anterior"
-                    dot={{ fill: '#8B5CF6', r: 4 }}
+                    dot={{ fill: "#8B5CF6", r: 4 }}
                   />
                 )}
               </LineChart>
             ) : (
               <BarChart data={data.visitData}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
-                <XAxis 
-                  dataKey="date" 
+                <XAxis
+                  dataKey="date"
                   stroke="#9CA3AF"
-                  style={{ fontSize: '12px' }}
+                  style={{ fontSize: "12px" }}
                 />
-                <YAxis 
-                  stroke="#9CA3AF"
-                  style={{ fontSize: '12px' }}
-                />
+                <YAxis stroke="#9CA3AF" style={{ fontSize: "12px" }} />
                 <Tooltip content={<CustomTooltip />} />
-                <Legend 
-                  wrapperStyle={{ fontSize: '14px' }}
-                />
-                <Bar 
-                  dataKey="visits" 
+                <Legend wrapperStyle={{ fontSize: "14px" }} />
+                <Bar
+                  dataKey="visits"
                   fill="#00C2E8"
                   name="Visitas"
                   radius={[8, 8, 0, 0]}
@@ -276,7 +292,7 @@ const AdvancedAnalytics = ({ data }: AdvancedAnalyticsProps) => {
           <CardContent>
             <div className="space-y-4">
               {data.popularPosts.map((post, index) => (
-                <div 
+                <div
                   key={index}
                   className="flex items-center justify-between p-3 bg-gray-800/50 rounded-lg"
                 >
@@ -309,9 +325,7 @@ const AdvancedAnalytics = ({ data }: AdvancedAnalyticsProps) => {
         <Card className="bg-dark-navy/50 border-gray-700">
           <CardHeader>
             <CardTitle className="text-white">Origem do Tráfego</CardTitle>
-            <p className="text-sm text-gray-400">
-              De onde seus visitantes vêm
-            </p>
+            <p className="text-sm text-gray-400">De onde seus visitantes vêm</p>
           </CardHeader>
           <CardContent>
             <ResponsiveContainer width="100%" height={300}>
@@ -321,13 +335,18 @@ const AdvancedAnalytics = ({ data }: AdvancedAnalyticsProps) => {
                   cx="50%"
                   cy="50%"
                   labelLine={false}
-                  label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                  label={({ name, percent }) =>
+                    `${name} ${(percent * 100).toFixed(0)}%`
+                  }
                   outerRadius={100}
                   fill="#8884d8"
                   dataKey="value"
                 >
                   {data.trafficSources.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                    <Cell
+                      key={`cell-${index}`}
+                      fill={COLORS[index % COLORS.length]}
+                    />
                   ))}
                 </Pie>
                 <Tooltip content={<CustomTooltip />} />
@@ -336,12 +355,14 @@ const AdvancedAnalytics = ({ data }: AdvancedAnalyticsProps) => {
             <div className="mt-4 grid grid-cols-2 gap-2">
               {data.trafficSources.map((source, index) => (
                 <div key={index} className="flex items-center gap-2">
-                  <div 
+                  <div
                     className="w-3 h-3 rounded-full"
                     style={{ backgroundColor: COLORS[index % COLORS.length] }}
                   />
                   <span className="text-sm text-gray-300">{source.name}</span>
-                  <span className="text-sm text-gray-500">({source.value})</span>
+                  <span className="text-sm text-gray-500">
+                    ({source.value})
+                  </span>
                 </div>
               ))}
             </div>

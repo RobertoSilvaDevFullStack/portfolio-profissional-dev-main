@@ -10,7 +10,12 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { PlusCircle, Pencil, Trash2, Loader2 } from "lucide-react";
-import { showSuccess, showError, showLoading, dismissToast } from "@/utils/toast";
+import {
+  showSuccess,
+  showError,
+  showLoading,
+  dismissToast,
+} from "@/utils/toast";
 import DeleteConfirmationDialog from "@/components/admin/DeleteConfirmationDialog";
 import PostScheduler from "@/components/admin/PostScheduler";
 import {
@@ -38,11 +43,19 @@ const postSchema = z.object({
   slug: z.string().min(1, "O slug é obrigatório."),
   excerpt: z.string().optional(),
   content: z.string().optional(),
-  cover_image_url: z.string().url("Deve ser uma URL válida.").optional().or(z.literal('')),
+  cover_image_url: z
+    .string()
+    .url("Deve ser uma URL válida.")
+    .optional()
+    .or(z.literal("")),
   author_name: z.string().optional(),
-  author_avatar_url: z.string().url("Deve ser uma URL válida.").optional().or(z.literal('')),
+  author_avatar_url: z
+    .string()
+    .url("Deve ser uma URL válida.")
+    .optional()
+    .or(z.literal("")),
   asset_urls: z.string().optional(),
-  status: z.enum(['draft', 'scheduled', 'published', 'archived']).optional(),
+  status: z.enum(["draft", "scheduled", "published", "archived"]).optional(),
   scheduled_at: z.date().optional(),
 });
 
@@ -54,10 +67,16 @@ interface Post {
   slug: string;
   created_at: string;
   asset_urls: string[] | null;
-  status?: 'draft' | 'scheduled' | 'published' | 'archived';
+  status?: "draft" | "scheduled" | "published" | "archived";
   scheduled_at?: string;
   published_at?: string;
-  [key: string]: any;
+  excerpt?: string | null;
+  content?: string | null;
+  cover_image_url?: string | null;
+  author_name?: string | null;
+  author_avatar_url?: string | null;
+  author_id?: string | null;
+  updated_at?: string;
 }
 
 const ManageBlog = () => {
@@ -69,7 +88,9 @@ const ManageBlog = () => {
   const [isUploading, setIsUploading] = useState(false);
   const [profileImageUrl, setProfileImageUrl] = useState("");
   const [scheduledDate, setScheduledDate] = useState<Date | undefined>();
-  const [postStatus, setPostStatus] = useState<'draft' | 'scheduled' | 'published' | 'archived'>('draft');
+  const [postStatus, setPostStatus] = useState<
+    "draft" | "scheduled" | "published" | "archived"
+  >("draft");
 
   const form = useForm<PostFormValues>({
     resolver: zodResolver(postSchema),
@@ -89,7 +110,9 @@ const ManageBlog = () => {
     setLoading(true);
     const { data, error } = await supabase
       .from("posts")
-      .select("id, title, slug, created_at, excerpt, content, cover_image_url, author_name, author_avatar_url, asset_urls")
+      .select(
+        "id, title, slug, created_at, excerpt, content, cover_image_url, author_name, author_avatar_url, asset_urls"
+      )
       .order("created_at", { ascending: false });
 
     if (error) {
@@ -104,15 +127,15 @@ const ManageBlog = () => {
   useEffect(() => {
     const fetchInitialData = async () => {
       const { data, error } = await supabase
-        .from('site_content')
-        .select('hero_image_url')
-        .eq('id', 1)
+        .from("site_content")
+        .select("hero_image_url")
+        .eq("id", 1)
         .single();
-      
+
       if (data && !error) {
         setProfileImageUrl(data.hero_image_url);
       }
-      
+
       await fetchPosts();
     };
 
@@ -130,10 +153,12 @@ const ManageBlog = () => {
         cover_image_url: post.cover_image_url || "",
         author_name: post.author_name || "Roberto Vicente da Silva",
         author_avatar_url: post.author_avatar_url || profileImageUrl,
-        asset_urls: post.asset_urls?.join(', ') || "",
+        asset_urls: post.asset_urls?.join(", ") || "",
       });
-      setPostStatus(post.status || 'draft');
-      setScheduledDate(post.scheduled_at ? new Date(post.scheduled_at) : undefined);
+      setPostStatus(post.status || "draft");
+      setScheduledDate(
+        post.scheduled_at ? new Date(post.scheduled_at) : undefined
+      );
     } else {
       form.reset({
         title: "",
@@ -145,7 +170,7 @@ const ManageBlog = () => {
         author_avatar_url: profileImageUrl,
         asset_urls: "",
       });
-      setPostStatus('draft');
+      setPostStatus("draft");
       setScheduledDate(undefined);
     }
     setIsDialogOpen(true);
@@ -156,22 +181,24 @@ const ManageBlog = () => {
     setIsDeleteDialogOpen(true);
   };
 
-  const handleAssetUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleAssetUpload = async (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
     const files = event.target.files;
     if (!files || files.length === 0) return;
 
     setIsUploading(true);
     const toastId = showLoading(`Enviando ${files.length} arquivo(s)...`);
-    const slug = form.getValues('slug') || 'post-sem-slug';
+    const slug = form.getValues("slug") || "post-sem-slug";
     const uploadedUrls: string[] = [];
 
     for (const file of Array.from(files)) {
-      const fileExt = file.name.split('.').pop();
+      const fileExt = file.name.split(".").pop();
       const fileName = `${slug}-${Date.now()}.${fileExt}`;
       const filePath = `${slug}/${fileName}`;
 
       const { error } = await supabase.storage
-        .from('blog-assets')
+        .from("blog-assets")
         .upload(filePath, file);
 
       if (error) {
@@ -181,7 +208,7 @@ const ManageBlog = () => {
       }
 
       const { data } = supabase.storage
-        .from('blog-assets')
+        .from("blog-assets")
         .getPublicUrl(filePath);
       uploadedUrls.push(data.publicUrl);
     }
@@ -189,33 +216,42 @@ const ManageBlog = () => {
     dismissToast(toastId);
     if (uploadedUrls.length > 0) {
       showSuccess(`${uploadedUrls.length} arquivo(s) enviados com sucesso!`);
-      
-      const currentCoverImage = form.getValues('cover_image_url');
+
+      const currentCoverImage = form.getValues("cover_image_url");
       if (!currentCoverImage) {
-        form.setValue('cover_image_url', uploadedUrls[0], { shouldDirty: true });
+        form.setValue("cover_image_url", uploadedUrls[0], {
+          shouldDirty: true,
+        });
       }
 
-      const existingUrls = form.getValues('asset_urls');
-      const newUrls = existingUrls ? `${existingUrls}, ${uploadedUrls.join(', ')}` : uploadedUrls.join(', ');
-      form.setValue('asset_urls', newUrls, { shouldDirty: true });
+      const existingUrls = form.getValues("asset_urls");
+      const newUrls = existingUrls
+        ? `${existingUrls}, ${uploadedUrls.join(", ")}`
+        : uploadedUrls.join(", ");
+      form.setValue("asset_urls", newUrls, { shouldDirty: true });
     }
     setIsUploading(false);
   };
 
   const onSubmit = async (values: PostFormValues) => {
     // Determinar o status baseado no agendamento
-    let finalStatus: 'draft' | 'scheduled' | 'published' | 'archived' = 'draft';
+    let finalStatus: "draft" | "scheduled" | "published" | "archived" = "draft";
     if (scheduledDate) {
-      finalStatus = scheduledDate > new Date() ? 'scheduled' : 'published';
-    } else if (postStatus === 'published') {
-      finalStatus = 'published';
+      finalStatus = scheduledDate > new Date() ? "scheduled" : "published";
+    } else if (postStatus === "published") {
+      finalStatus = "published";
     } else {
       finalStatus = postStatus;
     }
 
     const transformedValues = {
       ...values,
-      asset_urls: values.asset_urls ? values.asset_urls.split(',').map(url => url.trim()).filter(Boolean) : [],
+      asset_urls: values.asset_urls
+        ? values.asset_urls
+            .split(",")
+            .map((url) => url.trim())
+            .filter(Boolean)
+        : [],
       status: finalStatus,
       scheduled_at: scheduledDate?.toISOString() || null,
     };
@@ -253,7 +289,10 @@ const ManageBlog = () => {
     <div>
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-3xl font-bold text-white">Gerenciar Blog</h1>
-        <Button onClick={() => handleDialogOpen()} className="bg-light-cyan text-dark-navy hover:bg-light-cyan/90">
+        <Button
+          onClick={() => handleDialogOpen()}
+          className="bg-light-cyan text-dark-navy hover:bg-light-cyan/90"
+        >
           <PlusCircle className="mr-2 h-4 w-4" /> Novo Post
         </Button>
       </div>
@@ -269,15 +308,33 @@ const ManageBlog = () => {
           </TableHeader>
           <TableBody>
             {loading ? (
-              <TableRow><TableCell colSpan={3} className="text-center text-gray-400">Carregando...</TableCell></TableRow>
+              <TableRow>
+                <TableCell colSpan={3} className="text-center text-gray-400">
+                  Carregando...
+                </TableCell>
+              </TableRow>
             ) : (
               posts.map((post) => (
                 <TableRow key={post.id} className="border-gray-700">
                   <TableCell>{post.title}</TableCell>
-                  <TableCell>{new Date(post.created_at).toLocaleDateString("pt-BR")}</TableCell>
+                  <TableCell>
+                    {new Date(post.created_at).toLocaleDateString("pt-BR")}
+                  </TableCell>
                   <TableCell className="text-right">
-                    <Button variant="ghost" size="icon" onClick={() => handleDialogOpen(post)}><Pencil className="h-4 w-4" /></Button>
-                    <Button variant="ghost" size="icon" onClick={() => handleDeleteDialogOpen(post)}><Trash2 className="h-4 w-4 text-red-400" /></Button>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => handleDialogOpen(post)}
+                    >
+                      <Pencil className="h-4 w-4" />
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => handleDeleteDialogOpen(post)}
+                    >
+                      <Trash2 className="h-4 w-4 text-red-400" />
+                    </Button>
                   </TableCell>
                 </TableRow>
               ))
@@ -288,39 +345,184 @@ const ManageBlog = () => {
 
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogContent className="bg-gray-800 border-gray-700 text-white max-h-[90vh] overflow-y-auto">
-          <DialogHeader><DialogTitle>{selectedPost ? "Editar Post" : "Novo Post"}</DialogTitle></DialogHeader>
+          <DialogHeader>
+            <DialogTitle>
+              {selectedPost ? "Editar Post" : "Novo Post"}
+            </DialogTitle>
+          </DialogHeader>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-              <FormField control={form.control} name="title" render={({ field }) => (<FormItem><FormLabel>Título</FormLabel><FormControl><Input {...field} className="bg-gray-700 border-gray-600" /></FormControl><FormMessage /></FormItem>)}/>
-              <FormField control={form.control} name="slug" render={({ field }) => (<FormItem><FormLabel>Slug</FormLabel><FormControl><Input {...field} className="bg-gray-700 border-gray-600" /></FormControl><FormMessage /></FormItem>)}/>
-              <FormField control={form.control} name="author_name" render={({ field }) => (<FormItem><FormLabel>Nome do Autor</FormLabel><FormControl><Input {...field} className="bg-gray-700 border-gray-600" /></FormControl><FormMessage /></FormItem>)}/>
-              <FormField control={form.control} name="author_avatar_url" render={({ field }) => (<FormItem><FormLabel>URL do Avatar do Autor</FormLabel><FormControl><Input {...field} className="bg-gray-700 border-gray-600" /></FormControl><FormMessage /></FormItem>)}/>
-              <FormField control={form.control} name="cover_image_url" render={({ field }) => (<FormItem><FormLabel>URL da Imagem de Capa (Opcional)</FormLabel><FormControl><Input {...field} className="bg-gray-700 border-gray-600" /></FormControl><FormMessage /></FormItem>)}/>
-              
+              <FormField
+                control={form.control}
+                name="title"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Título</FormLabel>
+                    <FormControl>
+                      <Input
+                        {...field}
+                        className="bg-gray-700 border-gray-600"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="slug"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Slug</FormLabel>
+                    <FormControl>
+                      <Input
+                        {...field}
+                        className="bg-gray-700 border-gray-600"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="author_name"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Nome do Autor</FormLabel>
+                    <FormControl>
+                      <Input
+                        {...field}
+                        className="bg-gray-700 border-gray-600"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="author_avatar_url"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>URL do Avatar do Autor</FormLabel>
+                    <FormControl>
+                      <Input
+                        {...field}
+                        className="bg-gray-700 border-gray-600"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="cover_image_url"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>URL da Imagem de Capa (Opcional)</FormLabel>
+                    <FormControl>
+                      <Input
+                        {...field}
+                        className="bg-gray-700 border-gray-600"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
               <FormItem>
                 <FormLabel>Assets do Carrossel (Imagens ou PDFs)</FormLabel>
                 <FormControl>
-                  <Input type="file" multiple accept="image/*,application/pdf" onChange={handleAssetUpload} disabled={isUploading} className="bg-gray-700 border-gray-600 file:text-white file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-gray-600 file:text-gray-200 hover:file:bg-gray-500"/>
+                  <Input
+                    type="file"
+                    multiple
+                    accept="image/*,application/pdf"
+                    onChange={handleAssetUpload}
+                    disabled={isUploading}
+                    className="bg-gray-700 border-gray-600 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-gray-600 file:text-gray-200 hover:file:bg-gray-500"
+                  />
                 </FormControl>
-                {isUploading && <div className="flex items-center text-sm text-gray-400 mt-2"><Loader2 className="mr-2 h-4 w-4 animate-spin" />Enviando...</div>}
+                {isUploading && (
+                  <div className="flex items-center text-sm text-gray-400 mt-2">
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Enviando...
+                  </div>
+                )}
               </FormItem>
-              
-              <FormField control={form.control} name="asset_urls" render={({ field }) => (<FormItem><FormLabel>URLs dos Assets (separadas por vírgula)</FormLabel><FormControl><Textarea {...field} rows={3} className="bg-gray-700 border-gray-600" /></FormControl><FormMessage /></FormItem>)}/>
 
-              <FormField control={form.control} name="excerpt" render={({ field }) => (<FormItem><FormLabel>Resumo (Excerpt)</FormLabel><FormControl><Textarea {...field} className="bg-gray-700 border-gray-600" /></FormControl><FormMessage /></FormItem>)}/>
-              <FormField control={form.control} name="content" render={({ field }) => (<FormItem><FormLabel>Conteúdo (HTML - usado se não houver carrossel)</FormLabel><FormControl><Textarea {...field} rows={10} className="bg-gray-700 border-gray-600" /></FormControl><FormMessage /></FormItem>)}/>
-              
+              <FormField
+                control={form.control}
+                name="asset_urls"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>
+                      URLs dos Assets (separadas por vírgula)
+                    </FormLabel>
+                    <FormControl>
+                      <Textarea
+                        {...field}
+                        rows={3}
+                        className="bg-gray-700 border-gray-600"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="excerpt"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Resumo (Excerpt)</FormLabel>
+                    <FormControl>
+                      <Textarea
+                        {...field}
+                        className="bg-gray-700 border-gray-600"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="content"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>
+                      Conteúdo (HTML - usado se não houver carrossel)
+                    </FormLabel>
+                    <FormControl>
+                      <Textarea
+                        {...field}
+                        rows={10}
+                        className="bg-gray-700 border-gray-600"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
               {/* Post Scheduler */}
-              <PostScheduler 
+              <PostScheduler
                 scheduledAt={scheduledDate}
                 onScheduleChange={(date) => {
                   setScheduledDate(date);
-                  setPostStatus(date ? 'scheduled' : 'draft');
+                  setPostStatus(date ? "scheduled" : "draft");
                 }}
                 status={postStatus}
               />
 
-              <Button type="submit" className="w-full bg-light-cyan text-dark-navy hover:bg-light-cyan/90">
+              <Button
+                type="submit"
+                className="w-full bg-light-cyan text-dark-navy hover:bg-light-cyan/90"
+              >
                 {selectedPost ? "Salvar Alterações" : "Criar Post"}
               </Button>
             </form>
@@ -328,7 +530,12 @@ const ManageBlog = () => {
         </DialogContent>
       </Dialog>
 
-      <DeleteConfirmationDialog isOpen={isDeleteDialogOpen} onClose={() => setIsDeleteDialogOpen(false)} onConfirm={onDeleteConfirm} itemName={selectedPost?.title || ""}/>
+      <DeleteConfirmationDialog
+        isOpen={isDeleteDialogOpen}
+        onClose={() => setIsDeleteDialogOpen(false)}
+        onConfirm={onDeleteConfirm}
+        itemName={selectedPost?.title || ""}
+      />
     </div>
   );
 };

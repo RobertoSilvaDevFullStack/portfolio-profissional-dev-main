@@ -1,34 +1,34 @@
-import { useEffect, useState } from 'react';
-import { supabase } from '@/integrations/supabase/client';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { 
-  Bell, 
-  MessageSquare, 
-  Target, 
-  FileText, 
+import { useEffect, useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import {
+  Bell,
+  MessageSquare,
+  Target,
+  FileText,
   Briefcase,
   Settings,
   Trash2,
   ExternalLink,
   Check,
-  CheckCheck
-} from 'lucide-react';
-import { formatDistanceToNow, format } from 'date-fns';
-import { ptBR } from 'date-fns/locale';
-import { cn } from '@/lib/utils';
+  CheckCheck,
+} from "lucide-react";
+import { formatDistanceToNow, format } from "date-fns";
+import { ptBR } from "date-fns/locale";
+import { cn } from "@/lib/utils";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
+} from "@/components/ui/select";
 
 interface Notification {
   id: string;
-  type: 'lead' | 'comment' | 'goal' | 'post' | 'project' | 'system';
+  type: "lead" | "comment" | "goal" | "post" | "project" | "system";
   title: string;
   message: string;
   link?: string;
@@ -41,13 +41,15 @@ interface Notification {
 const Notifications = () => {
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [loading, setLoading] = useState(true);
-  const [filter, setFilter] = useState<'all' | 'unread' | 'read'>('all');
-  const [typeFilter, setTypeFilter] = useState<string>('all');
+  const [filter, setFilter] = useState<"all" | "unread" | "read">("all");
+  const [typeFilter, setTypeFilter] = useState<string>("all");
   const [userId, setUserId] = useState<string | null>(null);
 
   useEffect(() => {
     const getUserId = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
       setUserId(user?.id || null);
     };
     getUserId();
@@ -62,31 +64,31 @@ const Notifications = () => {
 
   const fetchNotifications = async () => {
     if (!userId) return;
-    
+
     setLoading(true);
     try {
       let query = supabase
-        .from('notifications')
-        .select('*')
-        .eq('user_id', userId)
-        .order('created_at', { ascending: false });
+        .from("notifications")
+        .select("*")
+        .eq("user_id", userId)
+        .order("created_at", { ascending: false });
 
-      if (filter === 'unread') {
-        query = query.eq('read', false);
-      } else if (filter === 'read') {
-        query = query.eq('read', true);
+      if (filter === "unread") {
+        query = query.eq("read", false);
+      } else if (filter === "read") {
+        query = query.eq("read", true);
       }
 
-      if (typeFilter !== 'all') {
-        query = query.eq('type', typeFilter);
+      if (typeFilter !== "all") {
+        query = query.eq("type", typeFilter);
       }
 
       const { data, error } = await query;
-      
+
       if (error) throw error;
       setNotifications(data || []);
     } catch (error) {
-      console.error('Error fetching notifications:', error);
+      console.error("Error fetching notifications:", error);
     } finally {
       setLoading(false);
     }
@@ -95,120 +97,114 @@ const Notifications = () => {
   const markAsRead = async (notificationId: string) => {
     try {
       const { error } = await supabase
-        .from('notifications')
+        .from("notifications")
         .update({ read: true, read_at: new Date().toISOString() })
-        .eq('id', notificationId);
+        .eq("id", notificationId);
 
       if (error) throw error;
 
-      setNotifications(prev =>
-        prev.map(n => n.id === notificationId ? { ...n, read: true } : n)
+      setNotifications((prev) =>
+        prev.map((n) => (n.id === notificationId ? { ...n, read: true } : n))
       );
     } catch (error) {
-      console.error('Error marking notification as read:', error);
+      console.error("Error marking notification as read:", error);
     }
   };
 
   const markAllAsRead = async () => {
     try {
-      const unreadIds = notifications
-        .filter(n => !n.read)
-        .map(n => n.id);
+      const unreadIds = notifications.filter((n) => !n.read).map((n) => n.id);
 
       if (unreadIds.length === 0) return;
 
       const { error } = await supabase
-        .from('notifications')
+        .from("notifications")
         .update({ read: true, read_at: new Date().toISOString() })
-        .in('id', unreadIds);
+        .in("id", unreadIds);
 
       if (error) throw error;
 
-      setNotifications(prev =>
-        prev.map(n => ({ ...n, read: true }))
-      );
+      setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
     } catch (error) {
-      console.error('Error marking all as read:', error);
+      console.error("Error marking all as read:", error);
     }
   };
 
   const deleteNotification = async (notificationId: string) => {
     try {
       const { error } = await supabase
-        .from('notifications')
+        .from("notifications")
         .delete()
-        .eq('id', notificationId);
+        .eq("id", notificationId);
 
       if (error) throw error;
 
-      setNotifications(prev => prev.filter(n => n.id !== notificationId));
+      setNotifications((prev) => prev.filter((n) => n.id !== notificationId));
     } catch (error) {
-      console.error('Error deleting notification:', error);
+      console.error("Error deleting notification:", error);
     }
   };
 
   const deleteAllRead = async () => {
     try {
-      const readIds = notifications
-        .filter(n => n.read)
-        .map(n => n.id);
+      const readIds = notifications.filter((n) => n.read).map((n) => n.id);
 
       if (readIds.length === 0) return;
 
       const { error } = await supabase
-        .from('notifications')
+        .from("notifications")
         .delete()
-        .in('id', readIds);
+        .in("id", readIds);
 
       if (error) throw error;
 
-      setNotifications(prev => prev.filter(n => !n.read));
+      setNotifications((prev) => prev.filter((n) => !n.read));
     } catch (error) {
-      console.error('Error deleting read notifications:', error);
+      console.error("Error deleting read notifications:", error);
     }
   };
 
-  const getNotificationIcon = (type: Notification['type']) => {
+  const getNotificationIcon = (type: Notification["type"]) => {
     const iconClass = "h-5 w-5";
     switch (type) {
-      case 'lead':
+      case "lead":
         return <MessageSquare className={iconClass} />;
-      case 'comment':
+      case "comment":
         return <MessageSquare className={iconClass} />;
-      case 'goal':
+      case "goal":
         return <Target className={iconClass} />;
-      case 'post':
+      case "post":
         return <FileText className={iconClass} />;
-      case 'project':
+      case "project":
         return <Briefcase className={iconClass} />;
-      case 'system':
+      case "system":
         return <Settings className={iconClass} />;
       default:
         return <Bell className={iconClass} />;
     }
   };
 
-  const getNotificationColor = (type: Notification['type']) => {
+  const getNotificationColor = (type: Notification["type"]) => {
     switch (type) {
-      case 'lead':
-        return 'text-blue-400 bg-blue-400/10 border-blue-400/20';
-      case 'comment':
-        return 'text-purple-400 bg-purple-400/10 border-purple-400/20';
-      case 'goal':
-        return 'text-green-400 bg-green-400/10 border-green-400/20';
-      case 'post':
-        return 'text-yellow-400 bg-yellow-400/10 border-yellow-400/20';
-      case 'project':
-        return 'text-cyan-400 bg-cyan-400/10 border-cyan-400/20';
-      case 'system':
-        return 'text-gray-400 bg-gray-400/10 border-gray-400/20';
+      case "lead":
+        return "text-blue-400 bg-blue-400/10 border-blue-400/20";
+      case "comment":
+        return "text-purple-400 bg-purple-400/10 border-purple-400/20";
+      case "goal":
+        return "text-green-400 bg-green-400/10 border-green-400/20";
+      case "post":
+        return "text-yellow-400 bg-yellow-400/10 border-yellow-400/20";
+      case "project":
+        return "text-cyan-400 bg-cyan-400/10 border-cyan-400/20";
+      case "system":
+        return "text-gray-400 bg-gray-400/10 border-gray-400/20";
       default:
-        return 'text-gray-400 bg-gray-400/10 border-gray-400/20';
+        return "text-gray-400 bg-gray-400/10 border-gray-400/20";
     }
   };
 
-  const unreadCount = notifications.filter(n => !n.read).length;
-  const readCount = notifications.filter(n => n.read).length;
+  const unreadCount = notifications.filter((n) => !n.read).length;
+  const readCount = notifications.filter((n) => n.read).length;
 
   return (
     <div>
@@ -216,7 +212,8 @@ const Notifications = () => {
         <div>
           <h1 className="text-3xl font-bold text-white mb-2">Notificações</h1>
           <p className="text-gray-400">
-            {unreadCount} não {unreadCount === 1 ? 'lida' : 'lidas'} · {readCount} {readCount === 1 ? 'lida' : 'lidas'}
+            {unreadCount} não {unreadCount === 1 ? "lida" : "lidas"} ·{" "}
+            {readCount} {readCount === 1 ? "lida" : "lidas"}
           </p>
         </div>
 
@@ -250,7 +247,12 @@ const Notifications = () => {
           <div className="flex items-center gap-4">
             <div className="flex-1">
               <label className="text-sm text-gray-400 mb-2 block">Status</label>
-              <Select value={filter} onValueChange={(value: 'all' | 'unread' | 'read') => setFilter(value)}>
+              <Select
+                value={filter}
+                onValueChange={(value: "all" | "unread" | "read") =>
+                  setFilter(value)
+                }
+              >
                 <SelectTrigger className="bg-gray-800 border-gray-600 text-white">
                   <SelectValue />
                 </SelectTrigger>
@@ -292,13 +294,15 @@ const Notifications = () => {
         <Card className="bg-dark-navy/50 border-gray-700">
           <CardContent className="flex flex-col items-center justify-center py-16">
             <Bell className="h-16 w-16 text-gray-600 mb-4" />
-            <p className="text-gray-400 text-lg">Nenhuma notificação encontrada</p>
+            <p className="text-gray-400 text-lg">
+              Nenhuma notificação encontrada
+            </p>
           </CardContent>
         </Card>
       ) : (
         <div className="space-y-4">
           {notifications.map((notification) => (
-            <Card 
+            <Card
               key={notification.id}
               className={cn(
                 "bg-dark-navy/50 border-gray-700 transition-all hover:border-gray-600",
@@ -307,21 +311,25 @@ const Notifications = () => {
             >
               <CardContent className="p-6">
                 <div className="flex gap-4">
-                  <div className={cn(
-                    "flex-shrink-0 w-12 h-12 rounded-full flex items-center justify-center border",
-                    getNotificationColor(notification.type)
-                  )}>
+                  <div
+                    className={cn(
+                      "flex-shrink-0 w-12 h-12 rounded-full flex items-center justify-center border",
+                      getNotificationColor(notification.type)
+                    )}
+                  >
                     {getNotificationIcon(notification.type)}
                   </div>
-                  
+
                   <div className="flex-1 min-w-0">
                     <div className="flex items-start justify-between gap-4 mb-2">
                       <div className="flex-1">
                         <div className="flex items-center gap-2 mb-1">
-                          <h3 className={cn(
-                            "text-lg font-semibold",
-                            notification.read ? "text-gray-300" : "text-white"
-                          )}>
+                          <h3
+                            className={cn(
+                              "text-lg font-semibold",
+                              notification.read ? "text-gray-300" : "text-white"
+                            )}
+                          >
                             {notification.title}
                           </h3>
                           {!notification.read && (
@@ -335,14 +343,21 @@ const Notifications = () => {
                         </p>
                         <div className="flex items-center gap-4 text-sm text-gray-500">
                           <span>
-                            {formatDistanceToNow(new Date(notification.created_at), {
-                              addSuffix: true,
-                              locale: ptBR
-                            })}
+                            {formatDistanceToNow(
+                              new Date(notification.created_at),
+                              {
+                                addSuffix: true,
+                                locale: ptBR,
+                              }
+                            )}
                           </span>
                           {notification.read_at && (
                             <span>
-                              · Lida em {format(new Date(notification.read_at), "dd/MM/yyyy 'às' HH:mm")}
+                              · Lida em{" "}
+                              {format(
+                                new Date(notification.read_at),
+                                "dd/MM/yyyy 'às' HH:mm"
+                              )}
                             </span>
                           )}
                         </div>

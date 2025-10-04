@@ -1,15 +1,15 @@
-import { useState, useEffect } from 'react';
-import { Bell } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { useState, useEffect } from "react";
+import { Bell } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from '@/components/ui/popover';
-import { Badge } from '@/components/ui/badge';
-import { supabase } from '@/integrations/supabase/client';
-import NotificationCenter from './NotificationCenter';
-import { useToast } from '@/hooks/use-toast';
+} from "@/components/ui/popover";
+import { Badge } from "@/components/ui/badge";
+import { supabase } from "@/integrations/supabase/client";
+import NotificationCenter from "./NotificationCenter";
+import { useToast } from "@/hooks/use-toast";
 
 interface NotificationBellProps {
   userId: string;
@@ -22,38 +22,38 @@ const NotificationBell = ({ userId }: NotificationBellProps) => {
 
   const fetchUnreadCount = async () => {
     const { count } = await supabase
-      .from('notifications')
-      .select('*', { count: 'exact', head: true })
-      .eq('user_id', userId)
-      .eq('read', false);
-    
+      .from("notifications")
+      .select("*", { count: "exact", head: true })
+      .eq("user_id", userId)
+      .eq("read", false);
+
     setUnreadCount(count || 0);
   };
 
   useEffect(() => {
     fetchUnreadCount();
-    
+
     // Configurar realtime subscription para novas notificações
     const channel = supabase
-      .channel('notifications-changes')
+      .channel("notifications-changes")
       .on(
-        'postgres_changes',
+        "postgres_changes",
         {
-          event: 'INSERT',
-          schema: 'public',
-          table: 'notifications',
+          event: "INSERT",
+          schema: "public",
+          table: "notifications",
           filter: `user_id=eq.${userId}`,
         },
         (payload) => {
-          setUnreadCount(prev => prev + 1);
-          
+          setUnreadCount((prev) => prev + 1);
+
           // Mostrar toast para nova notificação
           const notification = payload.new as {
             title: string;
             message: string;
             type: string;
           };
-          
+
           toast({
             title: notification.title,
             description: notification.message,
@@ -61,7 +61,7 @@ const NotificationBell = ({ userId }: NotificationBellProps) => {
           });
 
           // Tocar som de notificação (opcional)
-          const audio = new Audio('/notification-sound.mp3');
+          const audio = new Audio("/notification-sound.mp3");
           audio.volume = 0.3;
           audio.play().catch(() => {
             // Ignorar erros de áudio (pode não ter permissão)
@@ -69,11 +69,11 @@ const NotificationBell = ({ userId }: NotificationBellProps) => {
         }
       )
       .on(
-        'postgres_changes',
+        "postgres_changes",
         {
-          event: 'UPDATE',
-          schema: 'public',
-          table: 'notifications',
+          event: "UPDATE",
+          schema: "public",
+          table: "notifications",
           filter: `user_id=eq.${userId}`,
         },
         () => {
@@ -98,22 +98,22 @@ const NotificationBell = ({ userId }: NotificationBellProps) => {
         >
           <Bell className="h-5 w-5" />
           {unreadCount > 0 && (
-            <Badge 
-              variant="destructive" 
+            <Badge
+              variant="destructive"
               className="absolute -top-1 -right-1 h-5 w-5 p-0 flex items-center justify-center text-xs"
             >
-              {unreadCount > 99 ? '99+' : unreadCount}
+              {unreadCount > 99 ? "99+" : unreadCount}
             </Badge>
           )}
         </Button>
       </PopoverTrigger>
-      <PopoverContent 
-        className="w-96 p-0 bg-gray-900 border-gray-700" 
+      <PopoverContent
+        className="w-96 p-0 bg-gray-900 border-gray-700"
         align="end"
         sideOffset={8}
       >
-        <NotificationCenter 
-          userId={userId} 
+        <NotificationCenter
+          userId={userId}
           onClose={() => setIsOpen(false)}
           onNotificationRead={fetchUnreadCount}
         />
