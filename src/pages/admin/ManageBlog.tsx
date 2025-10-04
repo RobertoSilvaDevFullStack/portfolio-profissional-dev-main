@@ -12,6 +12,7 @@ import {
 import { PlusCircle, Pencil, Trash2, Loader2 } from "lucide-react";
 import { showSuccess, showError, showLoading, dismissToast } from "@/utils/toast";
 import DeleteConfirmationDialog from "@/components/admin/DeleteConfirmationDialog";
+import PostScheduler from "@/components/admin/PostScheduler";
 import {
   Dialog,
   DialogContent,
@@ -41,6 +42,8 @@ const postSchema = z.object({
   author_name: z.string().optional(),
   author_avatar_url: z.string().url("Deve ser uma URL válida.").optional().or(z.literal('')),
   asset_urls: z.string().optional(),
+  status: z.enum(['draft', 'scheduled', 'published', 'archived']).optional(),
+  scheduled_at: z.date().optional(),
 });
 
 type PostFormValues = z.infer<typeof postSchema>;
@@ -51,6 +54,9 @@ interface Post {
   slug: string;
   created_at: string;
   asset_urls: string[] | null;
+  status?: 'draft' | 'scheduled' | 'published' | 'archived';
+  scheduled_at?: string;
+  published_at?: string;
   [key: string]: any;
 }
 
@@ -62,6 +68,8 @@ const ManageBlog = () => {
   const [selectedPost, setSelectedPost] = useState<Post | null>(null);
   const [isUploading, setIsUploading] = useState(false);
   const [profileImageUrl, setProfileImageUrl] = useState("");
+  const [scheduledDate, setScheduledDate] = useState<Date | undefined>();
+  const [postStatus, setPostStatus] = useState<'draft' | 'scheduled' | 'published' | 'archived'>('draft');
 
   const form = useForm<PostFormValues>({
     resolver: zodResolver(postSchema),
@@ -124,6 +132,8 @@ const ManageBlog = () => {
         author_avatar_url: post.author_avatar_url || profileImageUrl,
         asset_urls: post.asset_urls?.join(', ') || "",
       });
+      setPostStatus(post.status || 'draft');
+      setScheduledDate(post.scheduled_at ? new Date(post.scheduled_at) : undefined);
     } else {
       form.reset({
         title: "",
@@ -135,6 +145,8 @@ const ManageBlog = () => {
         author_avatar_url: profileImageUrl,
         asset_urls: "",
       });
+      setPostStatus('draft');
+      setScheduledDate(undefined);
     }
     setIsDialogOpen(true);
   };
@@ -191,9 +203,21 @@ const ManageBlog = () => {
   };
 
   const onSubmit = async (values: PostFormValues) => {
+    // Determinar o status baseado no agendamento
+    let finalStatus: 'draft' | 'scheduled' | 'published' | 'archived' = 'draft';
+    if (scheduledDate) {
+      finalStatus = scheduledDate > new Date() ? 'scheduled' : 'published';
+    } else if (postStatus === 'published') {
+      finalStatus = 'published';
+    } else {
+      finalStatus = postStatus;
+    }
+
     const transformedValues = {
       ...values,
       asset_urls: values.asset_urls ? values.asset_urls.split(',').map(url => url.trim()).filter(Boolean) : [],
+      status: finalStatus,
+      scheduled_at: scheduledDate?.toISOString() || null,
     };
 
     if (selectedPost) {
@@ -286,6 +310,16 @@ const ManageBlog = () => {
               <FormField control={form.control} name="excerpt" render={({ field }) => (<FormItem><FormLabel>Resumo (Excerpt)</FormLabel><FormControl><Textarea {...field} className="bg-gray-700 border-gray-600" /></FormControl><FormMessage /></FormItem>)}/>
               <FormField control={form.control} name="content" render={({ field }) => (<FormItem><FormLabel>Conteúdo (HTML - usado se não houver carrossel)</FormLabel><FormControl><Textarea {...field} rows={10} className="bg-gray-700 border-gray-600" /></FormControl><FormMessage /></FormItem>)}/>
               
+              {/* Post Scheduler */}
+              <PostScheduler 
+                scheduledAt={scheduledDate}
+                onScheduleChange={(date) => {
+                  setScheduledDate(date);
+                  setPostStatus(date ? 'scheduled' : 'draft');
+                }}
+                status={postStatus}
+              />
+
               <Button type="submit" className="w-full bg-light-cyan text-dark-navy hover:bg-light-cyan/90">
                 {selectedPost ? "Salvar Alterações" : "Criar Post"}
               </Button>
