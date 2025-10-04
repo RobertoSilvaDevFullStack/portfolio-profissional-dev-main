@@ -4,13 +4,7 @@ import "react-quill/dist/quill.snow.css";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import {
-  FileText,
-  Eye,
-  Save,
-  Type,
-  Image as ImageIcon,
-} from "lucide-react";
+import { FileText, Eye, Save, Type, Image as ImageIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 interface RichTextEditorProps {
@@ -128,16 +122,10 @@ const RichTextEditor = ({
     markdown = markdown.replace(/<i>(.*?)<\/i>/g, "*$1*");
 
     // Links
-    markdown = markdown.replace(
-      /<a href="(.*?)">(.*?)<\/a>/g,
-      "[$2]($1)"
-    );
+    markdown = markdown.replace(/<a href="(.*?)">(.*?)<\/a>/g, "[$2]($1)");
 
     // Images
-    markdown = markdown.replace(
-      /<img src="(.*?)" alt="(.*?)">/g,
-      "![$2]($1)"
-    );
+    markdown = markdown.replace(/<img src="(.*?)" alt="(.*?)">/g, "![$2]($1)");
     markdown = markdown.replace(/<img src="(.*?)">/g, "![]($1)");
 
     // Lists
@@ -150,10 +138,7 @@ const RichTextEditor = ({
     });
 
     // Blockquotes
-    markdown = markdown.replace(
-      /<blockquote>(.*?)<\/blockquote>/g,
-      "> $1\n\n"
-    );
+    markdown = markdown.replace(/<blockquote>(.*?)<\/blockquote>/g, "> $1\n\n");
 
     // Code blocks
     markdown = markdown.replace(
@@ -182,15 +167,24 @@ const RichTextEditor = ({
       <Tabs defaultValue="editor" className="w-full">
         <div className="flex items-center justify-between mb-4">
           <TabsList className="bg-gray-800">
-            <TabsTrigger value="editor" className="data-[state=active]:bg-gray-700">
+            <TabsTrigger
+              value="editor"
+              className="data-[state=active]:bg-gray-700"
+            >
               <FileText className="h-4 w-4 mr-2" />
               Editor
             </TabsTrigger>
-            <TabsTrigger value="preview" className="data-[state=active]:bg-gray-700">
+            <TabsTrigger
+              value="preview"
+              className="data-[state=active]:bg-gray-700"
+            >
               <Eye className="h-4 w-4 mr-2" />
               Preview
             </TabsTrigger>
-            <TabsTrigger value="markdown" className="data-[state=active]:bg-gray-700">
+            <TabsTrigger
+              value="markdown"
+              className="data-[state=active]:bg-gray-700"
+            >
               <Type className="h-4 w-4 mr-2" />
               Markdown
             </TabsTrigger>
@@ -241,7 +235,9 @@ const RichTextEditor = ({
           <Card className="border-gray-700 p-6 min-h-[400px]">
             <div
               className="prose prose-invert max-w-none"
-              dangerouslySetInnerHTML={{ __html: value || "<p>Nenhum conteúdo para visualizar</p>" }}
+              dangerouslySetInnerHTML={{
+                __html: value || "<p>Nenhum conteúdo para visualizar</p>",
+              }}
             />
           </Card>
         </TabsContent>

@@ -13,6 +13,7 @@ import ManageContent from "./pages/admin/ManageContent";
 import ManageLeads from "./pages/admin/ManageLeads";
 import ManageComments from "./pages/admin/ManageComments";
 import Notifications from "./pages/admin/Notifications";
+import Backup from "./pages/admin/Backup";
 import AdminLayout from "./components/admin/AdminLayout";
 import ProtectedRoute from "./components/ProtectedRoute";
 import { AuthProvider } from "./contexts/AuthContext";
@@ -42,6 +43,7 @@ const App = () => (
                 <Route path="leads" element={<ManageLeads />} />
                 <Route path="comments" element={<ManageComments />} />
                 <Route path="notifications" element={<Notifications />} />
+                <Route path="backup" element={<Backup />} />
               </Route>
             </Route>
 

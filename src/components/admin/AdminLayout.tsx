@@ -10,6 +10,7 @@ import {
   MessagesSquare,
   Bell,
   Search,
+  Database,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
@@ -84,6 +85,11 @@ const AdminLayout = () => {
       to: "/admin/leads",
       icon: <MessageSquare className="h-5 w-5" />,
       label: "Gerenciar Leads",
+    },
+    {
+      to: "/admin/backup",
+      icon: <Database className="h-5 w-5" />,
+      label: "Backup",
     },
   ];
 
