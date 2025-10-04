@@ -1,4 +1,5 @@
 import { NavLink, Outlet, useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
 import {
   LayoutDashboard,
   Newspaper,
@@ -7,12 +8,23 @@ import {
   FileText,
   MessageSquare,
   MessagesSquare,
+  Bell,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
+import NotificationBell from "./NotificationBell";
 
 const AdminLayout = () => {
   const navigate = useNavigate();
+  const [userId, setUserId] = useState<string | null>(null);
+
+  useEffect(() => {
+    const getUserId = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      setUserId(user?.id || null);
+    };
+    getUserId();
+  }, []);
 
   const handleSignOut = async () => {
     await supabase.auth.signOut();
@@ -44,6 +56,11 @@ const AdminLayout = () => {
       to: "/admin/comments",
       icon: <MessagesSquare className="h-5 w-5" />,
       label: "Moderação",
+    },
+    {
+      to: "/admin/notifications",
+      icon: <Bell className="h-5 w-5" />,
+      label: "Notificações",
     },
     {
       to: "/admin/leads",
@@ -92,9 +109,17 @@ const AdminLayout = () => {
           </Button>
         </div>
       </aside>
-      <main className="flex-1 p-10 overflow-auto">
-        <Outlet />
-      </main>
+      <div className="flex-1 flex flex-col">
+        {/* Header com NotificationBell */}
+        <header className="bg-dark-navy border-b border-gray-800 px-10 py-4 flex items-center justify-end">
+          {userId && <NotificationBell userId={userId} />}
+        </header>
+        
+        {/* Main Content */}
+        <main className="flex-1 p-10 overflow-auto">
+          <Outlet />
+        </main>
+      </div>
     </div>
   );
 };
