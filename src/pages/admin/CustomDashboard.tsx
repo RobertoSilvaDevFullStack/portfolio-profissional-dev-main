@@ -19,7 +19,6 @@ import {
 } from "lucide-react";
 import { Responsive, WidthProvider, Layout } from "react-grid-layout";
 import "react-grid-layout/css/styles.css";
-import "react-resizable/css/styles.css";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
   Dialog,
