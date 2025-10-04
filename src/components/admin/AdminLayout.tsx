@@ -1,5 +1,5 @@
 import { NavLink, Outlet, useNavigate } from 'react-router-dom';
-import { LayoutDashboard, Newspaper, Briefcase, LogOut, FileText } from 'lucide-react';
+import { LayoutDashboard, Newspaper, Briefcase, LogOut, FileText, MessageSquare } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
 
@@ -16,6 +16,7 @@ const AdminLayout = () => {
     { to: '/admin/content', icon: <FileText className="h-5 w-5" />, label: 'Gerenciar Conteúdo' },
     { to: '/admin/blog', icon: <Newspaper className="h-5 w-5" />, label: 'Gerenciar Blog' },
     { to: '/admin/projects', icon: <Briefcase className="h-5 w-5" />, label: 'Gerenciar Projetos' },
+    { to: '/admin/leads', icon: <MessageSquare className="h-5 w-5" />, label: 'Gerenciar Leads' },
   ];
 
   return (

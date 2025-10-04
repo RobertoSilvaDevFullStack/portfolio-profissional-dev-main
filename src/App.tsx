@@ -10,6 +10,7 @@ import Dashboard from "./pages/admin/Dashboard";
 import ManageBlog from "./pages/admin/ManageBlog";
 import ManageProjects from "./pages/admin/ManageProjects";
 import ManageContent from "./pages/admin/ManageContent";
+import ManageLeads from "./pages/admin/ManageLeads";
 import AdminLayout from "./components/admin/AdminLayout";
 import ProtectedRoute from "./components/ProtectedRoute";
 import { AuthProvider } from "./contexts/AuthContext";
@@ -36,6 +37,7 @@ const App = () => (
                 <Route path="content" element={<ManageContent />} />
                 <Route path="blog" element={<ManageBlog />} />
                 <Route path="projects" element={<ManageProjects />} />
+                <Route path="leads" element={<ManageLeads />} />
               </Route>
             </Route>
 
