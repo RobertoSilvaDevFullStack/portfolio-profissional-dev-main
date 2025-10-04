@@ -15,7 +15,12 @@ import {
   AlertCircle,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import { showSuccess, showError, showLoading, dismissToast } from "@/utils/toast";
+import {
+  showSuccess,
+  showError,
+  showLoading,
+  dismissToast,
+} from "@/utils/toast";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import {
@@ -118,10 +123,22 @@ const Backup = () => {
         { data: comments },
         { data: siteContent },
       ] = await Promise.all([
-        supabase.from("posts").select("*").order("created_at", { ascending: false }),
-        supabase.from("projects").select("*").order("created_at", { ascending: false }),
-        supabase.from("leads").select("*").order("created_at", { ascending: false }),
-        supabase.from("comments").select("*").order("created_at", { ascending: false }),
+        supabase
+          .from("posts")
+          .select("*")
+          .order("created_at", { ascending: false }),
+        supabase
+          .from("projects")
+          .select("*")
+          .order("created_at", { ascending: false }),
+        supabase
+          .from("leads")
+          .select("*")
+          .order("created_at", { ascending: false }),
+        supabase
+          .from("comments")
+          .select("*")
+          .order("created_at", { ascending: false }),
         supabase.from("site_content").select("*"),
       ]);
 
@@ -187,7 +204,9 @@ const Backup = () => {
           const tables = Object.keys(data.data);
           for (const table of tables) {
             if (table !== "site_content") {
-              const { error } = await supabase.from(table).insert(data.data[table]);
+              const { error } = await supabase
+                .from(table)
+                .insert(data.data[table]);
               if (error) throw error;
             }
           }
@@ -372,7 +391,10 @@ const Backup = () => {
         <DialogContent className="bg-gray-800 border-gray-700 text-white">
           <DialogHeader>
             <DialogTitle>
-              Importar {importType === "all" ? "Backup Completo" : getTableLabel(importType)}
+              Importar{" "}
+              {importType === "all"
+                ? "Backup Completo"
+                : getTableLabel(importType)}
             </DialogTitle>
             <DialogDescription className="text-gray-400">
               Selecione o arquivo JSON para importar

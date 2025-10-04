@@ -12,6 +12,7 @@ import {
   Search,
   Database,
   ScrollText,
+  Layout,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
@@ -56,6 +57,11 @@ const AdminLayout = () => {
       to: "/admin",
       icon: <LayoutDashboard className="h-5 w-5" />,
       label: "Dashboard",
+    },
+    {
+      to: "/admin/custom-dashboard",
+      icon: <Layout className="h-5 w-5" />,
+      label: "Dashboard Customizável",
     },
     {
       to: "/admin/content",

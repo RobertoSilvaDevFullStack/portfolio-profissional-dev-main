@@ -383,15 +383,21 @@ const AuditLogs = () => {
                 </div>
                 <div>
                   <label className="text-sm text-gray-400">Usuário</label>
-                  <p className="text-white">{selectedLog.user_email || "Sistema"}</p>
+                  <p className="text-white">
+                    {selectedLog.user_email || "Sistema"}
+                  </p>
                 </div>
                 <div>
                   <label className="text-sm text-gray-400">Ação</label>
-                  <div className="mt-1">{getActionBadge(selectedLog.action)}</div>
+                  <div className="mt-1">
+                    {getActionBadge(selectedLog.action)}
+                  </div>
                 </div>
                 <div>
                   <label className="text-sm text-gray-400">Tipo</label>
-                  <p className="text-white">{getEntityLabel(selectedLog.entity_type)}</p>
+                  <p className="text-white">
+                    {getEntityLabel(selectedLog.entity_type)}
+                  </p>
                 </div>
                 {selectedLog.entity_title && (
                   <div className="col-span-2">
@@ -402,7 +408,9 @@ const AuditLogs = () => {
                 {selectedLog.ip_address && (
                   <div>
                     <label className="text-sm text-gray-400">IP</label>
-                    <p className="text-white font-mono">{selectedLog.ip_address}</p>
+                    <p className="text-white font-mono">
+                      {selectedLog.ip_address}
+                    </p>
                   </div>
                 )}
                 {selectedLog.entity_id && (
