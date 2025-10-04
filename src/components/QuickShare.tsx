@@ -64,9 +64,9 @@ const QuickShare = ({ post }: QuickShareProps) => {
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button
-          variant="ghost"
+          variant="outline"
           size="sm"
-          className="text-gray-400 hover:text-light-cyan hover:bg-gray-700 p-2"
+          className="text-white border-gray-600 hover:text-light-cyan hover:bg-gray-700 p-2"
           onClick={(e) => e.preventDefault()} // Previne navegação do Link pai
         >
           <Share2 size={16} />

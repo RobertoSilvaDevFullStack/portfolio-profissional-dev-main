@@ -58,7 +58,7 @@ const SocialShareButton = ({ post, platform }: SocialShareButtonProps) => {
     linkedin: {
       icon: Linkedin,
       name: "LinkedIn",
-      color: "bg-blue-600 hover:bg-blue-700",
+      color: "bg-blue-600 hover:bg-blue-700 border-blue-500",
       maxChars: 3000,
       defaultText: `🚀 ${post.title}
 
@@ -75,7 +75,7 @@ Leia o artigo completo em: ${postUrl}
       icon: Instagram,
       name: "Instagram",
       color:
-        "bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600",
+        "bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 border-purple-500",
       maxChars: 2200,
       defaultText: `🚀 ${post.title}
 
@@ -136,7 +136,7 @@ ${post.excerpt || ""}
       <DialogTrigger asChild>
         <Button
           onClick={handleOpen}
-          className={`${config.color} text-white px-4 py-2 rounded-lg flex items-center gap-2 transition-all duration-200 hover:scale-105`}
+          className={`${config.color} text-white px-4 py-2 rounded-lg flex items-center gap-2 transition-all duration-200 hover:scale-105 font-medium`}
         >
           <IconComponent size={20} />
           {config.name}
