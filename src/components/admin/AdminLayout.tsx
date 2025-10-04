@@ -6,6 +6,7 @@ import {
   LogOut,
   FileText,
   MessageSquare,
+  MessagesSquare,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
@@ -38,6 +39,11 @@ const AdminLayout = () => {
       to: "/admin/projects",
       icon: <Briefcase className="h-5 w-5" />,
       label: "Gerenciar Projetos",
+    },
+    {
+      to: "/admin/comments",
+      icon: <MessagesSquare className="h-5 w-5" />,
+      label: "Moderação",
     },
     {
       to: "/admin/leads",
