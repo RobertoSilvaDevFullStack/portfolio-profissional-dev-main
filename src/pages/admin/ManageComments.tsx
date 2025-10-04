@@ -1,10 +1,17 @@
-import { useEffect, useState } from 'react';
-import { supabase } from '@/integrations/supabase/client';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Textarea } from '@/components/ui/textarea';
+import { useEffect, useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
 import {
   MessageSquare,
   Check,
@@ -13,12 +20,12 @@ import {
   Eye,
   Clock,
   Filter,
-  Search
-} from 'lucide-react';
-import { Skeleton } from '@/components/ui/skeleton';
-import { format, parseISO } from 'date-fns';
-import { ptBR } from 'date-fns/locale';
-import { showSuccess, showError } from '@/utils/toast';
+  Search,
+} from "lucide-react";
+import { Skeleton } from "@/components/ui/skeleton";
+import { format, parseISO } from "date-fns";
+import { ptBR } from "date-fns/locale";
+import { showSuccess, showError } from "@/utils/toast";
 import {
   Dialog,
   DialogContent,
@@ -26,22 +33,22 @@ import {
   DialogHeader,
   DialogTitle,
   DialogFooter,
-} from '@/components/ui/dialog';
+} from "@/components/ui/dialog";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
-import { Input } from '@/components/ui/input';
-import DeleteConfirmationDialog from '@/components/admin/DeleteConfirmationDialog';
+} from "@/components/ui/select";
+import { Input } from "@/components/ui/input";
+import DeleteConfirmationDialog from "@/components/admin/DeleteConfirmationDialog";
 
 interface Comment {
   id: string;
   content: string;
   created_at: string;
-  status: 'pending' | 'approved' | 'rejected' | 'spam';
+  status: "pending" | "approved" | "rejected" | "spam";
   rejection_reason?: string;
   user_id: string;
   post_id: string;
@@ -58,12 +65,12 @@ interface Comment {
 const ManageComments = () => {
   const [comments, setComments] = useState<Comment[]>([]);
   const [loading, setLoading] = useState(true);
-  const [filterStatus, setFilterStatus] = useState<string>('all');
-  const [searchTerm, setSearchTerm] = useState('');
+  const [filterStatus, setFilterStatus] = useState<string>("all");
+  const [searchTerm, setSearchTerm] = useState("");
   const [selectedComment, setSelectedComment] = useState<Comment | null>(null);
   const [showDetailsDialog, setShowDetailsDialog] = useState(false);
   const [showRejectDialog, setShowRejectDialog] = useState(false);
-  const [rejectionReason, setRejectionReason] = useState('');
+  const [rejectionReason, setRejectionReason] = useState("");
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [commentToDelete, setCommentToDelete] = useState<string | null>(null);
   const [stats, setStats] = useState({
@@ -82,19 +89,21 @@ const ManageComments = () => {
     setLoading(true);
     try {
       const { data, error } = await supabase
-        .from('comments')
-        .select(`
+        .from("comments")
+        .select(
+          `
           *,
           posts (title, slug),
           profiles (full_name, email)
-        `)
-        .order('created_at', { ascending: false });
+        `
+        )
+        .order("created_at", { ascending: false });
 
       if (error) throw error;
       setComments(data || []);
     } catch (error) {
-      console.error('Erro ao buscar comentários:', error);
-      showError('Erro ao carregar comentários');
+      console.error("Erro ao buscar comentários:", error);
+      showError("Erro ao carregar comentários");
     } finally {
       setLoading(false);
     }
@@ -103,8 +112,8 @@ const ManageComments = () => {
   const fetchStats = async () => {
     try {
       const { data, error } = await supabase
-        .from('comment_moderation_stats')
-        .select('*')
+        .from("comment_moderation_stats")
+        .select("*")
         .single();
 
       if (error) throw error;
@@ -117,24 +126,24 @@ const ManageComments = () => {
         });
       }
     } catch (error) {
-      console.error('Erro ao buscar estatísticas:', error);
+      console.error("Erro ao buscar estatísticas:", error);
     }
   };
 
   const moderateComment = async (
     commentId: string,
-    status: 'approved' | 'rejected' | 'spam',
+    status: "approved" | "rejected" | "spam",
     reason?: string
   ) => {
     try {
       const { error } = await supabase
-        .from('comments')
+        .from("comments")
         .update({
           status,
           moderated_at: new Date().toISOString(),
           rejection_reason: reason || null,
         })
-        .eq('id', commentId);
+        .eq("id", commentId);
 
       if (error) throw error;
 
@@ -142,32 +151,32 @@ const ManageComments = () => {
       await fetchStats();
 
       const messages = {
-        approved: 'Comentário aprovado!',
-        rejected: 'Comentário rejeitado!',
-        spam: 'Comentário marcado como spam!',
+        approved: "Comentário aprovado!",
+        rejected: "Comentário rejeitado!",
+        spam: "Comentário marcado como spam!",
       };
 
       showSuccess(messages[status]);
       setShowRejectDialog(false);
-      setRejectionReason('');
+      setRejectionReason("");
     } catch (error) {
-      console.error('Erro ao moderar comentário:', error);
-      showError('Erro ao moderar comentário');
+      console.error("Erro ao moderar comentário:", error);
+      showError("Erro ao moderar comentário");
     }
   };
 
   const handleDeleteComment = async (id: string) => {
     try {
-      const { error } = await supabase.from('comments').delete().eq('id', id);
+      const { error } = await supabase.from("comments").delete().eq("id", id);
 
       if (error) throw error;
 
-      setComments(comments.filter(comment => comment.id !== id));
+      setComments(comments.filter((comment) => comment.id !== id));
       await fetchStats();
-      showSuccess('Comentário excluído com sucesso!');
+      showSuccess("Comentário excluído com sucesso!");
     } catch (error) {
-      console.error('Erro ao excluir comentário:', error);
-      showError('Erro ao excluir comentário');
+      console.error("Erro ao excluir comentário:", error);
+      showError("Erro ao excluir comentário");
     } finally {
       setDeleteDialogOpen(false);
       setCommentToDelete(null);
@@ -186,21 +195,25 @@ const ManageComments = () => {
 
   const getStatusBadge = (status: string) => {
     const statusConfig = {
-      pending: { label: 'Pendente', className: 'bg-yellow-500' },
-      approved: { label: 'Aprovado', className: 'bg-green-500' },
-      rejected: { label: 'Rejeitado', className: 'bg-red-500' },
-      spam: { label: 'Spam', className: 'bg-orange-500' },
+      pending: { label: "Pendente", className: "bg-yellow-500" },
+      approved: { label: "Aprovado", className: "bg-green-500" },
+      rejected: { label: "Rejeitado", className: "bg-red-500" },
+      spam: { label: "Spam", className: "bg-orange-500" },
     };
 
-    const config = statusConfig[status as keyof typeof statusConfig] || statusConfig.pending;
+    const config =
+      statusConfig[status as keyof typeof statusConfig] || statusConfig.pending;
     return <Badge className={config.className}>{config.label}</Badge>;
   };
 
-  const filteredComments = comments.filter(comment => {
-    const matchesStatus = filterStatus === 'all' || comment.status === filterStatus;
-    const matchesSearch = 
+  const filteredComments = comments.filter((comment) => {
+    const matchesStatus =
+      filterStatus === "all" || comment.status === filterStatus;
+    const matchesSearch =
       comment.content.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      comment.profiles?.full_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      comment.profiles?.full_name
+        ?.toLowerCase()
+        .includes(searchTerm.toLowerCase()) ||
       comment.posts?.title?.toLowerCase().includes(searchTerm.toLowerCase());
     return matchesStatus && matchesSearch;
   });
@@ -209,9 +222,14 @@ const ManageComments = () => {
     <div>
       <div className="flex justify-between items-center mb-6">
         <div>
-          <h1 className="text-3xl font-bold text-white">Moderação de Comentários</h1>
+          <h1 className="text-3xl font-bold text-white">
+            Moderação de Comentários
+          </h1>
           <p className="text-gray-400 mt-2">
-            {stats.pending} {stats.pending === 1 ? 'comentário pendente' : 'comentários pendentes'}
+            {stats.pending}{" "}
+            {stats.pending === 1
+              ? "comentário pendente"
+              : "comentários pendentes"}
           </p>
         </div>
       </div>
@@ -223,7 +241,9 @@ const ManageComments = () => {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-400">Pendentes</p>
-                <p className="text-2xl font-bold text-yellow-500">{stats.pending}</p>
+                <p className="text-2xl font-bold text-yellow-500">
+                  {stats.pending}
+                </p>
               </div>
               <Clock className="h-8 w-8 text-yellow-500" />
             </div>
@@ -235,7 +255,9 @@ const ManageComments = () => {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-400">Aprovados</p>
-                <p className="text-2xl font-bold text-green-500">{stats.approved}</p>
+                <p className="text-2xl font-bold text-green-500">
+                  {stats.approved}
+                </p>
               </div>
               <Check className="h-8 w-8 text-green-500" />
             </div>
@@ -247,7 +269,9 @@ const ManageComments = () => {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-400">Rejeitados</p>
-                <p className="text-2xl font-bold text-red-500">{stats.rejected}</p>
+                <p className="text-2xl font-bold text-red-500">
+                  {stats.rejected}
+                </p>
               </div>
               <X className="h-8 w-8 text-red-500" />
             </div>
@@ -259,7 +283,9 @@ const ManageComments = () => {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-400">Spam</p>
-                <p className="text-2xl font-bold text-orange-500">{stats.spam}</p>
+                <p className="text-2xl font-bold text-orange-500">
+                  {stats.spam}
+                </p>
               </div>
               <Ban className="h-8 w-8 text-orange-500" />
             </div>
@@ -313,9 +339,9 @@ const ManageComments = () => {
             <div className="text-center py-12">
               <MessageSquare className="h-12 w-12 text-gray-600 mx-auto mb-4" />
               <p className="text-gray-400">
-                {searchTerm || filterStatus !== 'all'
-                  ? 'Nenhum comentário encontrado com este filtro.'
-                  : 'Nenhum comentário ainda.'}
+                {searchTerm || filterStatus !== "all"
+                  ? "Nenhum comentário encontrado com este filtro."
+                  : "Nenhum comentário ainda."}
               </p>
             </div>
           ) : (
@@ -332,11 +358,16 @@ const ManageComments = () => {
               </TableHeader>
               <TableBody>
                 {filteredComments.map((comment) => (
-                  <TableRow key={comment.id} className="border-gray-700 hover:bg-gray-800/50">
+                  <TableRow
+                    key={comment.id}
+                    className="border-gray-700 hover:bg-gray-800/50"
+                  >
                     <TableCell className="font-medium text-gray-300">
                       <div>
-                        <p>{comment.profiles?.full_name || 'Usuário'}</p>
-                        <p className="text-xs text-gray-500">{comment.profiles?.email}</p>
+                        <p>{comment.profiles?.full_name || "Usuário"}</p>
+                        <p className="text-xs text-gray-500">
+                          {comment.profiles?.email}
+                        </p>
                       </div>
                     </TableCell>
                     <TableCell className="text-gray-300 max-w-md">
@@ -353,11 +384,13 @@ const ManageComments = () => {
                       </a>
                     </TableCell>
                     <TableCell className="text-gray-300 text-sm">
-                      {format(parseISO(comment.created_at), 'dd/MM/yyyy HH:mm', { locale: ptBR })}
+                      {format(
+                        parseISO(comment.created_at),
+                        "dd/MM/yyyy HH:mm",
+                        { locale: ptBR }
+                      )}
                     </TableCell>
-                    <TableCell>
-                      {getStatusBadge(comment.status)}
-                    </TableCell>
+                    <TableCell>{getStatusBadge(comment.status)}</TableCell>
                     <TableCell className="text-right">
                       <div className="flex justify-end gap-1">
                         <Button
@@ -370,11 +403,13 @@ const ManageComments = () => {
                           <Eye className="h-4 w-4" />
                         </Button>
 
-                        {comment.status !== 'approved' && (
+                        {comment.status !== "approved" && (
                           <Button
                             variant="ghost"
                             size="sm"
-                            onClick={() => moderateComment(comment.id, 'approved')}
+                            onClick={() =>
+                              moderateComment(comment.id, "approved")
+                            }
                             className="text-green-400 hover:text-green-400 hover:bg-gray-700"
                             title="Aprovar"
                           >
@@ -382,7 +417,7 @@ const ManageComments = () => {
                           </Button>
                         )}
 
-                        {comment.status !== 'rejected' && (
+                        {comment.status !== "rejected" && (
                           <Button
                             variant="ghost"
                             size="sm"
@@ -394,11 +429,11 @@ const ManageComments = () => {
                           </Button>
                         )}
 
-                        {comment.status !== 'spam' && (
+                        {comment.status !== "spam" && (
                           <Button
                             variant="ghost"
                             size="sm"
-                            onClick={() => moderateComment(comment.id, 'spam')}
+                            onClick={() => moderateComment(comment.id, "spam")}
                             className="text-orange-400 hover:text-orange-400 hover:bg-gray-700"
                             title="Marcar como spam"
                           >
@@ -425,8 +460,12 @@ const ManageComments = () => {
             <div className="space-y-4">
               <div>
                 <p className="text-sm text-gray-400">Autor</p>
-                <p className="text-white font-medium">{selectedComment.profiles?.full_name}</p>
-                <p className="text-sm text-gray-400">{selectedComment.profiles?.email}</p>
+                <p className="text-white font-medium">
+                  {selectedComment.profiles?.full_name}
+                </p>
+                <p className="text-sm text-gray-400">
+                  {selectedComment.profiles?.email}
+                </p>
               </div>
 
               <div>
@@ -444,7 +483,9 @@ const ManageComments = () => {
               <div>
                 <p className="text-sm text-gray-400">Comentário</p>
                 <div className="bg-gray-900 p-4 rounded-lg mt-2">
-                  <p className="text-gray-300 whitespace-pre-wrap">{selectedComment.content}</p>
+                  <p className="text-gray-300 whitespace-pre-wrap">
+                    {selectedComment.content}
+                  </p>
                 </div>
               </div>
 
@@ -452,7 +493,11 @@ const ManageComments = () => {
                 <div>
                   <p className="text-sm text-gray-400">Data</p>
                   <p className="text-white">
-                    {format(parseISO(selectedComment.created_at), "dd/MM/yyyy 'às' HH:mm", { locale: ptBR })}
+                    {format(
+                      parseISO(selectedComment.created_at),
+                      "dd/MM/yyyy 'às' HH:mm",
+                      { locale: ptBR }
+                    )}
                   </p>
                 </div>
                 <div>
@@ -464,7 +509,9 @@ const ManageComments = () => {
               {selectedComment.rejection_reason && (
                 <div>
                   <p className="text-sm text-gray-400">Motivo da Rejeição</p>
-                  <p className="text-red-400">{selectedComment.rejection_reason}</p>
+                  <p className="text-red-400">
+                    {selectedComment.rejection_reason}
+                  </p>
                 </div>
               )}
             </div>
@@ -495,7 +542,7 @@ const ManageComments = () => {
               variant="outline"
               onClick={() => {
                 setShowRejectDialog(false);
-                setRejectionReason('');
+                setRejectionReason("");
               }}
               className="border-gray-600 hover:bg-gray-700 text-white"
             >
@@ -504,7 +551,11 @@ const ManageComments = () => {
             <Button
               onClick={() => {
                 if (selectedComment) {
-                  moderateComment(selectedComment.id, 'rejected', rejectionReason);
+                  moderateComment(
+                    selectedComment.id,
+                    "rejected",
+                    rejectionReason
+                  );
                 }
               }}
               className="bg-red-600 hover:bg-red-700 text-white"
@@ -522,7 +573,9 @@ const ManageComments = () => {
           setDeleteDialogOpen(false);
           setCommentToDelete(null);
         }}
-        onConfirm={() => commentToDelete && handleDeleteComment(commentToDelete)}
+        onConfirm={() =>
+          commentToDelete && handleDeleteComment(commentToDelete)
+        }
         itemName="comentário"
       />
     </div>

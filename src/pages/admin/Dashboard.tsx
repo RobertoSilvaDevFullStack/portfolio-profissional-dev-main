@@ -5,6 +5,7 @@ import { Briefcase, FileText, MessageSquare, TrendingUp } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import VisitChart from '@/components/admin/VisitChart';
+import AdvancedAnalytics from '@/components/admin/AdvancedAnalytics';
 import { subDays, format, parseISO } from 'date-fns';
 
 interface Stats {
@@ -24,10 +25,30 @@ interface VisitData {
   visits: number;
 }
 
+interface AnalyticsData {
+  visitData: Array<{ date: string; visits: number; previousPeriod?: number }>;
+  conversionData: {
+    leads: number;
+    visits: number;
+    conversionRate: number;
+    trend: number;
+  };
+  popularPosts: Array<{
+    title: string;
+    views: number;
+    shares: number;
+  }>;
+  trafficSources: Array<{
+    name: string;
+    value: number;
+  }>;
+}
+
 const Dashboard = () => {
   const [stats, setStats] = useState<Stats | null>(null);
   const [projectClicks, setProjectClicks] = useState<ProjectClick[]>([]);
   const [visitData, setVisitData] = useState<VisitData[]>([]);
+  const [analyticsData, setAnalyticsData] = useState<AnalyticsData | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -88,6 +109,36 @@ const Dashboard = () => {
           leads: leadsCount ?? 0,
         });
 
+        // Prepare analytics data
+        const totalVisits = totalVisitsCount ?? 0;
+        const totalLeads = leadsCount ?? 0;
+        const conversionRate = totalVisits > 0 ? (totalLeads / totalVisits) * 100 : 0;
+
+        setAnalyticsData({
+          visitData: chartData.map(item => ({
+            date: item.date,
+            visits: item.visits,
+            previousPeriod: Math.floor(item.visits * 0.9) // Mock previous period data
+          })),
+          conversionData: {
+            leads: totalLeads,
+            visits: totalVisits,
+            conversionRate,
+            trend: 12.5 // Mock trend data
+          },
+          popularPosts: [
+            { title: 'Post Exemplo 1', views: 1250, shares: 45 },
+            { title: 'Post Exemplo 2', views: 980, shares: 32 },
+            { title: 'Post Exemplo 3', views: 756, shares: 28 }
+          ],
+          trafficSources: [
+            { name: 'Direto', value: 45 },
+            { name: 'Redes Sociais', value: 30 },
+            { name: 'Pesquisa Orgânica', value: 15 },
+            { name: 'Referências', value: 10 }
+          ]
+        });
+
       } catch (error) {
         console.error("Error fetching dashboard data:", error);
       } finally {
@@ -125,7 +176,7 @@ const Dashboard = () => {
         <StatCard title="Novos Leads" value={stats?.leads ?? 0} icon={<MessageSquare className="h-4 w-4 text-gray-500" />} loading={loading} />
       </div>
 
-      <div className="grid gap-8 lg:grid-cols-5">
+      <div className="grid gap-8 lg:grid-cols-5 mb-8">
         <div className="lg:col-span-3">
           {loading ? <Skeleton className="h-[422px] w-full" /> : <VisitChart data={visitData} />}
         </div>
@@ -161,6 +212,9 @@ const Dashboard = () => {
           </Card>
         </div>
       </div>
+
+      {/* Advanced Analytics Section */}
+      {!loading && analyticsData && <AdvancedAnalytics data={analyticsData} />}
     </div>
   );
 };
