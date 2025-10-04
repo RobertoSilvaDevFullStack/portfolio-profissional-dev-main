@@ -18,6 +18,7 @@ import {
 } from "@/utils/toast";
 import DeleteConfirmationDialog from "@/components/admin/DeleteConfirmationDialog";
 import PostScheduler from "@/components/admin/PostScheduler";
+import SEOEditor from "@/components/admin/SEOEditor";
 import {
   Dialog,
   DialogContent,
@@ -57,6 +58,8 @@ const postSchema = z.object({
   asset_urls: z.string().optional(),
   status: z.enum(["draft", "scheduled", "published", "archived"]).optional(),
   scheduled_at: z.date().optional(),
+  seo_title: z.string().optional(),
+  seo_description: z.string().optional(),
 });
 
 type PostFormValues = z.infer<typeof postSchema>;
@@ -77,6 +80,8 @@ interface Post {
   author_avatar_url?: string | null;
   author_id?: string | null;
   updated_at?: string;
+  seo_title?: string | null;
+  seo_description?: string | null;
 }
 
 const ManageBlog = () => {
@@ -111,7 +116,7 @@ const ManageBlog = () => {
     const { data, error } = await supabase
       .from("posts")
       .select(
-        "id, title, slug, created_at, excerpt, content, cover_image_url, author_name, author_avatar_url, asset_urls"
+        "id, title, slug, created_at, excerpt, content, cover_image_url, author_name, author_avatar_url, asset_urls, status, scheduled_at, published_at, seo_title, seo_description"
       )
       .order("created_at", { ascending: false });
 
@@ -154,6 +159,8 @@ const ManageBlog = () => {
         author_name: post.author_name || "Roberto Vicente da Silva",
         author_avatar_url: post.author_avatar_url || profileImageUrl,
         asset_urls: post.asset_urls?.join(", ") || "",
+        seo_title: post.seo_title || post.title,
+        seo_description: post.seo_description || post.excerpt || "",
       });
       setPostStatus(post.status || "draft");
       setScheduledDate(
@@ -169,6 +176,8 @@ const ManageBlog = () => {
         author_name: "Roberto Vicente da Silva",
         author_avatar_url: profileImageUrl,
         asset_urls: "",
+        seo_title: "",
+        seo_description: "",
       });
       setPostStatus("draft");
       setScheduledDate(undefined);
@@ -507,6 +516,18 @@ const ManageBlog = () => {
                     <FormMessage />
                   </FormItem>
                 )}
+              />
+
+              {/* SEO Editor */}
+              <SEOEditor
+                title={form.watch("seo_title") || form.watch("title") || ""}
+                description={form.watch("seo_description") || form.watch("excerpt") || ""}
+                slug={form.watch("slug") || ""}
+                coverImageUrl={form.watch("cover_image_url") || ""}
+                content={form.watch("content") || ""}
+                onTitleChange={(value) => form.setValue("seo_title", value)}
+                onDescriptionChange={(value) => form.setValue("seo_description", value)}
+                onSlugChange={(value) => form.setValue("slug", value)}
               />
 
               {/* Post Scheduler */}
