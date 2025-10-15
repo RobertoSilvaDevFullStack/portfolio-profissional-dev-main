@@ -78,3 +78,23 @@
     @apply bg-black text-gray-200;
   }
 }
+
+@layer components {
+  /* Estilos customizados para modais do admin */
+  [role="dialog"] {
+    @apply rounded-lg shadow-2xl;
+  }
+
+  /* Melhorar scrollbar nos modais */
+  .overflow-y-auto::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  .overflow-y-auto::-webkit-scrollbar-track {
+    @apply bg-gray-900 rounded;
+  }
+
+  .overflow-y-auto::-webkit-scrollbar-thumb {
+    @apply bg-gray-600 rounded hover:bg-gray-500;
+  }
+}

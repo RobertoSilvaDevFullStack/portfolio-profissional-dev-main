@@ -15,6 +15,7 @@ Portfólio profissional completo com sistema de blog, gerenciamento de projetos,
 ### 🎯 Funcionalidades Principais
 
 #### 🌐 Website Público
+
 - **Design Responsivo**: Totalmente adaptável a todos os dispositivos
 - **Navegação Intuitiva**: Header fixo com scroll suave
 - **Blog Interativo**: Sistema de posts com comentários e curtidas
@@ -26,50 +27,59 @@ Portfólio profissional completo com sistema de blog, gerenciamento de projetos,
 #### 🔐 Painel Administrativo (10 Módulos)
 
 1. **Dashboard Principal**
+
    - Métricas em tempo real (visitas, posts, projetos, leads)
    - Gráficos de analytics
    - Acesso rápido às funcionalidades
 
 2. **Dashboard Customizável** ⭐ NOVO
+
    - Drag & drop de widgets
    - 6 widgets configuráveis
    - Persistência de layout
    - Totalmente responsivo
 
 3. **Gestão de Blog**
+
    - Editor WYSIWYG com Markdown
    - Agendamento de posts
    - Gestão de SEO por post
    - Preview em tempo real
 
 4. **Gestão de Projetos**
+
    - CRUD completo
    - Upload de imagens
    - Status e tags
 
 5. **Moderação de Comentários**
+
    - Aprovação/rejeição
    - Marcação de spam
    - Resposta rápida
    - Filtros avançados
 
 6. **Central de Notificações**
+
    - Notificações em tempo real
    - Badge com contador
    - Filtros por tipo e status
    - Navegação contextual
 
 7. **Gestão de Leads**
+
    - Visualização de contatos
    - Status de atendimento
    - Notas e follow-up
 
 8. **Busca Global**
+
    - Atalho Ctrl+K / Cmd+K
    - Busca em múltiplas tabelas
    - Resultados agrupados
 
 9. **Backup e Restauração**
+
    - Export/Import de dados
    - Backup versionado
    - Validação de dados
@@ -83,6 +93,7 @@ Portfólio profissional completo com sistema de blog, gerenciamento de projetos,
 ## 🚀 Stack Tecnológica
 
 ### Frontend
+
 - **Framework**: [React 18](https://reactjs.org/) + [TypeScript](https://www.typescriptlang.org/)
 - **Build Tool**: [Vite 6.3.4](https://vitejs.dev/)
 - **Estilização**: [Tailwind CSS](https://tailwindcss.com/) + [shadcn/ui](https://ui.shadcn.com/)
@@ -95,6 +106,7 @@ Portfólio profissional completo com sistema de blog, gerenciamento de projetos,
 - **Datas**: [date-fns](https://date-fns.org/) (ptBR)
 
 ### Backend & Infraestrutura
+
 - **BaaS**: [Supabase](https://supabase.com/)
   - PostgreSQL Database
   - Authentication
@@ -105,6 +117,7 @@ Portfólio profissional completo com sistema de blog, gerenciamento de projetos,
 - **Deploy**: [Vercel](https://vercel.com/) (recomendado)
 
 ### Ferramentas de Desenvolvimento
+
 - **Package Manager**: pnpm
 - **Linter**: ESLint
 - **Formatter**: Prettier (implícito)
@@ -226,7 +239,7 @@ portfolio-profissional-dev-main/
 
 ### Pré-requisitos
 
-- [Node.js](https://nodejs.org/) 18+ 
+- [Node.js](https://nodejs.org/) 18+
 - [pnpm](https://pnpm.io/) (recomendado) ou npm
 - Conta no [Supabase](https://supabase.com)
 
@@ -273,7 +286,8 @@ pnpm dev
 npm run dev
 ```
 
-Acesse: 
+Acesse:
+
 - **Site público**: http://localhost:8080
 - **Painel admin**: http://localhost:8080/admin
 
@@ -321,6 +335,7 @@ supabase/migrations/
 ### 4. Configurar Buckets
 
 No Supabase Storage, crie os buckets:
+
 - `blog-assets` (público)
 - `project-assets` (público)
 - `site-assets` (público)
@@ -341,6 +356,7 @@ supabase functions deploy publish-scheduled-posts
 ### Estrutura do Banco
 
 **Tabelas principais:**
+
 - `posts` - Posts do blog
 - `projects` - Projetos do portfólio
 - `leads` - Contatos/leads
@@ -352,6 +368,7 @@ supabase functions deploy publish-scheduled-posts
 - `audit_logs` - Logs de auditoria ⭐
 
 **Recursos:**
+
 - ✅ Row Level Security (RLS) habilitado
 - ✅ Realtime subscriptions configuradas
 - ✅ Triggers automáticos
@@ -362,13 +379,13 @@ supabase functions deploy publish-scheduled-posts
 
 Toda a documentação do projeto está na pasta `docs/`:
 
-| Documento | Descrição |
-|-----------|-----------|
-| **PROJETO-FINALIZADO.md** | 🎉 Documento de conclusão oficial |
-| **RESUMO-FASES-IMPLEMENTADAS.md** | 📊 Resumo detalhado das 10 fases |
-| **IMPLEMENTATION-PLAN.md** | 📋 Plano de implementação original |
-| **ADMIN-IMPROVEMENTS.md** | 💡 Sugestões de melhorias futuras |
-| **sql-scripts/** | 🗄️ Migrations SQL do Supabase |
+| Documento                         | Descrição                          |
+| --------------------------------- | ---------------------------------- |
+| **PROJETO-FINALIZADO.md**         | 🎉 Documento de conclusão oficial  |
+| **RESUMO-FASES-IMPLEMENTADAS.md** | 📊 Resumo detalhado das 10 fases   |
+| **IMPLEMENTATION-PLAN.md**        | 📋 Plano de implementação original |
+| **ADMIN-IMPROVEMENTS.md**         | 💡 Sugestões de melhorias futuras  |
+| **sql-scripts/**                  | 🗄️ Migrations SQL do Supabase      |
 
 ### Guias Rápidos
 
@@ -471,6 +488,7 @@ Sistema robusto de backup:
 ### Outras Plataformas
 
 O projeto também funciona em:
+
 - **Netlify**
 - **Railway**
 - **Render**

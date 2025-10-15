@@ -354,14 +354,17 @@ const ManageBlog = () => {
       </div>
 
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent className="bg-gray-800 border-gray-700 text-white max-h-[90vh] overflow-y-auto">
+        <DialogContent className="bg-gray-800 border-gray-700 text-white max-w-[95vw] w-full max-h-[95vh] overflow-y-auto p-6">
           <DialogHeader>
-            <DialogTitle>
+            <DialogTitle className="text-2xl">
               {selectedPost ? "Editar Post" : "Novo Post"}
             </DialogTitle>
           </DialogHeader>
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+            <form
+              onSubmit={form.handleSubmit(onSubmit)}
+              className="space-y-6 mt-4"
+            >
               <FormField
                 control={form.control}
                 name="title"

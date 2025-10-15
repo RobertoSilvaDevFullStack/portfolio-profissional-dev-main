@@ -64,9 +64,9 @@ const SEOEditor = ({
       {/* Editor de Campos SEO */}
       <Card className="bg-gray-800 border-gray-700">
         <CardHeader>
-          <CardTitle className="text-white">Otimização SEO</CardTitle>
+          <CardTitle className="text-white text-xl">Otimização SEO</CardTitle>
         </CardHeader>
-        <CardContent className="space-y-4">
+        <CardContent className="space-y-6">
           {/* Título SEO */}
           <div>
             <Label className="text-white">Título SEO *</Label>
