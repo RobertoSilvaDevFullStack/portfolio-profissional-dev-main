@@ -1,5 +1,5 @@
 import { NavLink, Outlet, useNavigate } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
 import {
   LayoutDashboard,
   Newspaper,
@@ -15,24 +15,14 @@ import {
   Layout,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/contexts/AuthContext";
 import NotificationBell from "./NotificationBell";
 import GlobalSearch from "./GlobalSearch";
 
 const AdminLayout = () => {
   const navigate = useNavigate();
-  const [userId, setUserId] = useState<string | null>(null);
+  const { user, logout } = useAuth();
   const [searchOpen, setSearchOpen] = useState(false);
-
-  useEffect(() => {
-    const getUserId = async () => {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-      setUserId(user?.id || null);
-    };
-    getUserId();
-  }, []);
 
   // Atalho Ctrl+K / Cmd+K para abrir busca
   useEffect(() => {
@@ -48,7 +38,7 @@ const AdminLayout = () => {
   }, []);
 
   const handleSignOut = async () => {
-    await supabase.auth.signOut();
+    await logout();
     navigate("/login");
   };
 
@@ -120,10 +110,9 @@ const AdminLayout = () => {
                   to={link.to}
                   end={link.to === "/admin"}
                   className={({ isActive }) =>
-                    `flex items-center gap-3 px-4 py-2 rounded-lg transition-colors ${
-                      isActive
-                        ? "bg-light-cyan text-dark-navy"
-                        : "hover:bg-gray-800/50"
+                    `flex items-center gap-3 px-4 py-2 rounded-lg transition-colors ${isActive
+                      ? "bg-light-cyan text-dark-navy"
+                      : "hover:bg-gray-800/50"
                     }`
                   }
                 >
@@ -162,7 +151,7 @@ const AdminLayout = () => {
           </Button>
 
           {/* Notificações */}
-          {userId && <NotificationBell userId={userId} />}
+          {user && <NotificationBell userId={user.id} />}
         </header>
 
         {/* Main Content */}
