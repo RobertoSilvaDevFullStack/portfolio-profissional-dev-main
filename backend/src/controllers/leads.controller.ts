@@ -15,7 +15,6 @@ const updateLeadSchema = z.object({
     notes: z.string().optional(),
 });
 
-// POST /api/leads - Criar lead (público - formulário de contato)
 export const createLead = async (req: AuthRequest, res: Response) => {
     try {
         const data = createLeadSchema.parse(req.body);
@@ -24,7 +23,7 @@ export const createLead = async (req: AuthRequest, res: Response) => {
             data,
         });
 
-        res.status(201).json({
+        return res.status(201).json({
             message: 'Mensagem enviada com sucesso!',
             lead: {
                 id: lead.id,
@@ -36,11 +35,10 @@ export const createLead = async (req: AuthRequest, res: Response) => {
             return res.status(400).json({ error: error.errors[0].message });
         }
         console.error('Create lead error:', error);
-        res.status(500).json({ error: 'Erro ao enviar mensagem' });
+        return res.status(500).json({ error: 'Erro ao enviar mensagem' });
     }
 };
 
-// GET /api/leads - Listar leads (requer auth)
 export const getLeads = async (req: AuthRequest, res: Response) => {
     try {
         if (!req.user) {
@@ -61,14 +59,13 @@ export const getLeads = async (req: AuthRequest, res: Response) => {
             },
         });
 
-        res.json({ leads });
+        return res.json({ leads });
     } catch (error) {
         console.error('Get leads error:', error);
-        res.status(500).json({ error: 'Erro ao buscar leads' });
+        return res.status(500).json({ error: 'Erro ao buscar leads' });
     }
 };
 
-// PUT /api/leads/:id - Atualizar lead (requer auth)
 export const updateLead = async (req: AuthRequest, res: Response) => {
     try {
         if (!req.user) {
@@ -83,17 +80,16 @@ export const updateLead = async (req: AuthRequest, res: Response) => {
             data,
         });
 
-        res.json({ lead });
+        return res.json({ lead });
     } catch (error) {
         if (error instanceof z.ZodError) {
             return res.status(400).json({ error: error.errors[0].message });
         }
         console.error('Update lead error:', error);
-        res.status(500).json({ error: 'Erro ao atualizar lead' });
+        return res.status(500).json({ error: 'Erro ao atualizar lead' });
     }
 };
 
-// DELETE /api/leads/:id - Deletar lead (requer auth)
 export const deleteLead = async (req: AuthRequest, res: Response) => {
     try {
         if (!req.user) {
@@ -106,9 +102,9 @@ export const deleteLead = async (req: AuthRequest, res: Response) => {
             where: { id },
         });
 
-        res.json({ message: 'Lead deletado com sucesso' });
+        return res.json({ message: 'Lead deletado com sucesso' });
     } catch (error) {
         console.error('Delete lead error:', error);
-        res.status(500).json({ error: 'Erro ao deletar lead' });
+        return res.status(500).json({ error: 'Erro ao deletar lead' });
     }
 };

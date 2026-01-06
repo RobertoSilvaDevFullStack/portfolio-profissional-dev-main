@@ -14,14 +14,12 @@ const createProjectSchema = z.object({
     order: z.number().default(0),
 });
 
-// GET /api/projects - Listar projetos (público)
 export const getProjects = async (req: AuthRequest, res: Response) => {
     try {
         const { status } = req.query;
 
         const where: any = {};
 
-        // Se não autenticado, mostrar apenas ativos
         if (!req.user) {
             where.status = 'active';
         } else if (status) {
@@ -36,14 +34,13 @@ export const getProjects = async (req: AuthRequest, res: Response) => {
             ],
         });
 
-        res.json({ projects });
+        return res.json({ projects });
     } catch (error) {
         console.error('Get projects error:', error);
-        res.status(500).json({ error: 'Erro ao buscar projetos' });
+        return res.status(500).json({ error: 'Erro ao buscar projetos' });
     }
 };
 
-// POST /api/projects - Criar projeto (requer auth)
 export const createProject = async (req: AuthRequest, res: Response) => {
     try {
         if (!req.user) {
@@ -56,17 +53,16 @@ export const createProject = async (req: AuthRequest, res: Response) => {
             data,
         });
 
-        res.status(201).json({ project });
+        return res.status(201).json({ project });
     } catch (error) {
         if (error instanceof z.ZodError) {
             return res.status(400).json({ error: error.errors[0].message });
         }
         console.error('Create project error:', error);
-        res.status(500).json({ error: 'Erro ao criar projeto' });
+        return res.status(500).json({ error: 'Erro ao criar projeto' });
     }
 };
 
-// PUT /api/projects/:id - Atualizar projeto (requer auth)
 export const updateProject = async (req: AuthRequest, res: Response) => {
     try {
         if (!req.user) {
@@ -81,17 +77,16 @@ export const updateProject = async (req: AuthRequest, res: Response) => {
             data,
         });
 
-        res.json({ project });
+        return res.json({ project });
     } catch (error) {
         if (error instanceof z.ZodError) {
             return res.status(400).json({ error: error.errors[0].message });
         }
         console.error('Update project error:', error);
-        res.status(500).json({ error: 'Erro ao atualizar projeto' });
+        return res.status(500).json({ error: 'Erro ao atualizar projeto' });
     }
 };
 
-// DELETE /api/projects/:id - Deletar projeto (requer auth)
 export const deleteProject = async (req: AuthRequest, res: Response) => {
     try {
         if (!req.user) {
@@ -104,9 +99,9 @@ export const deleteProject = async (req: AuthRequest, res: Response) => {
             where: { id },
         });
 
-        res.json({ message: 'Projeto deletado com sucesso' });
+        return res.json({ message: 'Projeto deletado com sucesso' });
     } catch (error) {
         console.error('Delete project error:', error);
-        res.status(500).json({ error: 'Erro ao deletar projeto' });
+        return res.status(500).json({ error: 'Erro ao deletar projeto' });
     }
 };

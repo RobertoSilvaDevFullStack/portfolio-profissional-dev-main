@@ -21,7 +21,7 @@ export const authMiddleware = (
         const payload = verifyToken(token);
 
         req.user = payload;
-        next();
+        return next();
     } catch (error) {
         return res.status(401).json({ error: 'Token inválido ou expirado' });
     }

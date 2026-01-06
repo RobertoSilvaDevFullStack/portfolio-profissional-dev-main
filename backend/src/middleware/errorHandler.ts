@@ -1,31 +1,15 @@
 import { Request, Response, NextFunction } from 'express';
 
-export interface AppError extends Error {
-    statusCode?: number;
-    isOperational?: boolean;
-}
+// Error handler middleware
+export const errorHandler = (err: Error, _req: Request, res: Response, _next: NextFunction) => {
+    console.error('Error:', err);
 
-export const errorHandler = (
-    err: AppError,
-    req: Request,
-    res: Response,
-    next: NextFunction
-) => {
-    const statusCode = err.statusCode || 500;
+    // Default error
+    const statusCode = (err as any).statusCode || 500;
     const message = err.message || 'Erro interno do servidor';
 
-    // Log error in development
-    if (process.env.NODE_ENV === 'development') {
-        console.error('Error:', {
-            message: err.message,
-            stack: err.stack,
-            url: req.url,
-            method: req.method,
-        });
-    }
-
-    res.status(statusCode).json({
+    return res.status(statusCode).json({
         error: message,
-        ...(process.env.NODE_ENV === 'development' && { stack: err.stack }),
+        stack: process.env.NODE_ENV === 'development' ? err.stack : undefined,
     });
 };
