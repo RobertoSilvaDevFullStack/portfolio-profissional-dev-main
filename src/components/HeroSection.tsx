@@ -68,7 +68,7 @@ const HeroSection = (props: React.HTMLAttributes<HTMLElement>) => {
               <div className="rounded-full w-64 h-64 md:w-80 md:h-80 bg-gray-700 animate-pulse" />
             ) : (
               <img
-                src={imageUrlWithCacheBust}
+                src="/foto-pessoal.jpeg"
                 alt="Roberto Vicente da Silva"
                 className="rounded-full w-64 h-64 md:w-80 md:h-80 object-cover border-4 border-light-cyan shadow-lg"
               />
