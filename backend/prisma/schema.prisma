@@ -1,0 +1,165 @@
+// This is your Prisma schema file
+// Learn more: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  password  String
+  fullName  String?  @map("full_name")
+  avatarUrl String?  @map("avatar_url")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  posts         Post[]
+  comments      Comment[]
+  auditLogs     AuditLog[]
+  notifications Notification[]
+
+  @@map("users")
+}
+
+model Post {
+  id               String    @id @default(uuid())
+  title            String
+  slug             String    @unique
+  excerpt          String?
+  content          String?
+  coverImageUrl    String?   @map("cover_image_url")
+  status           String    @default("draft") // draft, scheduled, published
+  scheduledFor     DateTime? @map("scheduled_for")
+  metaTitle        String?   @map("meta_title")
+  metaDescription  String?   @map("meta_description")
+  metaKeywords     String?   @map("meta_keywords")
+ metaOgImage      String?   @map("meta_og_image")
+  authorId         String    @map("author_id")
+  viewCount        Int       @default(0) @map("view_count")
+  createdAt        DateTime  @default(now()) @map("created_at")
+  updatedAt        DateTime  @updatedAt @map("updated_at")
+  publishedAt      DateTime? @map("published_at")
+
+  author   User      @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  comments Comment[]
+
+  @@index([slug])
+  @@index([status])
+  @@index([createdAt(sort: Desc)])
+  @@map("posts")
+}
+
+model Project {
+  id           String   @id @default(uuid())
+  title        String
+  description  String?
+  imageUrl     String?  @map("image_url")
+  projectUrl   String?  @map("project_url")
+  githubUrl    String?  @map("github_url")
+  technologies String[] @default([])
+  status       String   @default("active") // active, archived
+  order        Int      @default(0)
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  @@index([status])
+  @@index([order])
+  @@map("projects")
+}
+
+model Lead {
+  id        String   @id @default(uuid())
+  name      String
+  email     String
+  message   String?
+  phone     String?
+  status    String   @default("new") // new, contacted, converted, archived
+  notes     String?
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@index([email])
+  @@index([status])
+  @@index([createdAt(sort: Desc)])
+  @@map("leads")
+}
+
+model Comment {
+  id              String    @id @default(uuid())
+  postId          String    @map("post_id")
+  authorId        String?   @map("author_id")
+  authorName      String    @map("author_name")
+  authorEmail     String    @map("author_email")
+  content         String
+  status          String    @default("pending") // pending, approved, rejected, spam
+  moderatedBy     String?   @map("moderated_by")
+  moderatedAt     DateTime? @map("moderated_at")
+  moderationNotes String?   @map("moderation_notes")
+  createdAt       DateTime  @default(now()) @map("created_at")
+  updatedAt       DateTime  @updatedAt @map("updated_at")
+
+  post   Post  @relation(fields: [postId], references: [id], onDelete: Cascade)
+  author User? @relation(fields: [authorId], references: [id], onDelete: SetNull)
+
+  @@index([postId])
+  @@index([status])
+  @@index([createdAt(sort: Desc)])
+  @@map("comments")
+}
+
+model PageVisit {
+  id        String   @id @default(uuid())
+  page      String
+  userAgent String?  @map("user_agent")
+  ipAddress String?  @map("ip_address")
+  referrer  String?
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@index([page])
+  @@index([createdAt(sort: Desc)])
+  @@map("page_visits")
+}
+
+model Notification {
+  id        String   @id @default(uuid())
+  userId    String   @map("user_id")
+  type      String // comment, lead, system
+  title     String
+  message   String
+  link      String?
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now()) @map("created_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([read])
+  @@index([createdAt(sort: Desc)])
+  @@map("notifications")
+}
+
+model AuditLog {
+  id          String   @id @default(uuid())
+  userId      String   @map("user_id")
+  action      String // create, update, delete
+  entity      String // post, project, lead, comment
+  entityId    String   @map("entity_id")
+  oldData     Json?    @map("old_data")
+  newData     Json?    @map("new_data")
+  ipAddress   String?  @map("ip_address")
+  userAgent   String?  @map("user_agent")
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([entity])
+  @@index([createdAt(sort: Desc)])
+  @@map("audit_logs")
+}
