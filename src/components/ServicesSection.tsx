@@ -1,46 +1,35 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Skeleton } from '@/components/ui/skeleton';
-import { supabase } from '@/integrations/supabase/client';
-import { Code, Share2, Siren, Wrench, Zap, type LucideIcon } from 'lucide-react';
-import React, { useEffect, useState } from 'react';
-
-interface Service {
-  id: string;
-  icon: string;
-  title: string;
-  description: string;
-}
-
-const iconComponents: { [key: string]: LucideIcon } = {
-  Code,
-  Share2,
-  Zap,
-  Siren,
-  Wrench,
-};
+import { Code, Share2, Zap, Wrench, Settings } from 'lucide-react';
+import React from 'react';
 
 const ServicesSection = (props: React.HTMLAttributes<HTMLElement>) => {
-  const [services, setServices] = useState<Service[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const fetchServices = async () => {
-      setLoading(true);
-      const { data, error } = await supabase
-        .from('services')
-        .select('*')
-        .order('display_order', { ascending: true });
-
-      if (error) {
-        console.error('Error fetching services:', error);
-      } else {
-        setServices(data);
-      }
-      setLoading(false);
-    };
-
-    fetchServices();
-  }, []);
+  const services = [
+    {
+      icon: Code,
+      title: 'Desenvolvimento Customizado',
+      description: 'Sistemas Web e Aplicativos completos e responsivos, da prototipagem no Figma até o deploy.'
+    },
+    {
+      icon: Share2,
+      title: 'APIs e Integrações',
+      description: 'Construção de APIs RESTful robustas e integração com serviços de terceiros para comunicação eficiente.'
+    },
+    {
+      icon: Zap,
+      title: 'Performance e Segurança',
+      description: 'Implementação das melhores práticas para garantir que seus sistemas sejam rápidos, seguros e escaláveis.'
+    },
+    {
+      icon: Settings,
+      title: 'Consultoria em Arquitetura',
+      description: 'Definição da melhor arquitetura para seu projeto, garantindo escalabilidade e manutenibilidade.'
+    },
+    {
+      icon: Wrench,
+      title: 'Manutenção e Evolução',
+      description: 'Melhorias, refatorações e novas funcionalidades em sistemas existentes para garantir sua longevidade.'
+    }
+  ];
 
   return (
     <section {...props} className="w-full py-20 md:py-32">
@@ -50,26 +39,20 @@ const ServicesSection = (props: React.HTMLAttributes<HTMLElement>) => {
           <div className="w-24 h-1 bg-light-cyan mx-auto mt-4"></div>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {loading ? (
-            Array.from({ length: 5 }).map((_, index) => (
-              <Skeleton key={index} className="h-56 w-full" />
-            ))
-          ) : (
-            services.map((service) => {
-              const IconComponent = iconComponents[service.icon];
-              return (
-                <Card key={service.id} className="bg-gray-800 border-gray-700 text-center p-6">
-                  <CardHeader className="flex items-center justify-center">
-                    {IconComponent ? <IconComponent className="w-10 h-10 text-light-cyan" /> : null}
-                  </CardHeader>
-                  <CardContent>
-                    <CardTitle className="text-white text-xl mb-2">{service.title}</CardTitle>
-                    <p className="text-gray-400">{service.description}</p>
-                  </CardContent>
-                </Card>
-              );
-            })
-          )}
+          {services.map((service, index) => {
+            const IconComponent = service.icon;
+            return (
+              <Card key={index} className="bg-gray-800 border-gray-700 text-center p-6 hover:border-light-cyan transition-colors">
+                <CardHeader className="flex items-center justify-center">
+                  <IconComponent className="w-10 h-10 text-light-cyan" />
+                </CardHeader>
+                <CardContent>
+                  <CardTitle className="text-white text-xl mb-2">{service.title}</CardTitle>
+                  <p className="text-gray-400">{service.description}</p>
+                </CardContent>
+              </Card>
+            );
+          })}
         </div>
       </div>
     </section>
