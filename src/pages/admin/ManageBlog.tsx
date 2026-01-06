@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import { api } from "@/lib/api-client";
 import { Button } from "@/components/ui/button";
 import {
   Table,
@@ -45,22 +45,15 @@ const postSchema = z.object({
   slug: z.string().min(1, "O slug é obrigatório."),
   excerpt: z.string().optional(),
   content: z.string().optional(),
-  cover_image_url: z
+  coverImageUrl: z
     .string()
     .url("Deve ser uma URL válida.")
     .optional()
     .or(z.literal("")),
-  author_name: z.string().optional(),
-  author_avatar_url: z
-    .string()
-    .url("Deve ser uma URL válida.")
-    .optional()
-    .or(z.literal("")),
-  asset_urls: z.string().optional(),
-  status: z.enum(["draft", "scheduled", "published", "archived"]).optional(),
-  scheduled_at: z.date().optional(),
-  seo_title: z.string().optional(),
-  seo_description: z.string().optional(),
+  status: z.enum(["draft", "scheduled", "published"]).optional(),
+  scheduledFor: z.date().optional(),
+  metaTitle: z.string().optional(),
+  metaDescription: z.string().optional(),
 });
 
 type PostFormValues = z.infer<typeof postSchema>;
@@ -69,20 +62,16 @@ interface Post {
   id: string;
   title: string;
   slug: string;
-  created_at: string;
-  asset_urls: string[] | null;
-  status?: "draft" | "scheduled" | "published" | "archived";
-  scheduled_at?: string;
-  published_at?: string;
+  createdAt: string;
+  status?: "draft" | "scheduled" | "published";
+  scheduledFor?: string;
   excerpt?: string | null;
   content?: string | null;
-  cover_image_url?: string | null;
-  author_name?: string | null;
-  author_avatar_url?: string | null;
-  author_id?: string | null;
-  updated_at?: string;
-  seo_title?: string | null;
-  seo_description?: string | null;
+  coverImageUrl?: string | null;
+  authorId?: string | null;
+  updatedAt?: string;
+  metaTitle?: string | null;
+  metaDescription?: string | null;
 }
 
 const ManageBlog = () => {
@@ -92,10 +81,9 @@ const ManageBlog = () => {
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [selectedPost, setSelectedPost] = useState<Post | null>(null);
   const [isUploading, setIsUploading] = useState(false);
-  const [profileImageUrl, setProfileImageUrl] = useState("");
   const [scheduledDate, setScheduledDate] = useState<Date | undefined>();
   const [postStatus, setPostStatus] = useState<
-    "draft" | "scheduled" | "published" | "archived"
+    "draft" | "scheduled" | "published"
   >("draft");
 
   const form = useForm<PostFormValues>({
@@ -105,47 +93,25 @@ const ManageBlog = () => {
       slug: "",
       excerpt: "",
       content: "",
-      cover_image_url: "",
-      author_name: "Roberto Vicente da Silva",
-      author_avatar_url: "",
-      asset_urls: "",
+      coverImageUrl: "",
     },
   });
 
   const fetchPosts = async () => {
     setLoading(true);
-    const { data, error } = await supabase
-      .from("posts")
-      .select(
-        "id, title, slug, created_at, excerpt, content, cover_image_url, author_name, author_avatar_url, asset_urls, status, scheduled_at, published_at, seo_title, seo_description"
-      )
-      .order("created_at", { ascending: false });
-
-    if (error) {
+    try {
+      const { data } = await api.posts.list();
+      setPosts(data.posts || []);
+    } catch (error) {
       showError("Erro ao buscar posts.");
       console.error(error);
-    } else {
-      setPosts(data);
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   useEffect(() => {
-    const fetchInitialData = async () => {
-      const { data, error } = await supabase
-        .from("site_content")
-        .select("hero_image_url")
-        .eq("id", 1)
-        .single();
-
-      if (data && !error) {
-        setProfileImageUrl(data.hero_image_url);
-      }
-
-      await fetchPosts();
-    };
-
-    fetchInitialData();
+    fetchPosts();
   }, []);
 
   const handleDialogOpen = (post: Post | null = null) => {
@@ -156,16 +122,13 @@ const ManageBlog = () => {
         slug: post.slug,
         excerpt: post.excerpt || "",
         content: post.content || "",
-        cover_image_url: post.cover_image_url || "",
-        author_name: post.author_name || "Roberto Vicente da Silva",
-        author_avatar_url: post.author_avatar_url || profileImageUrl,
-        asset_urls: post.asset_urls?.join(", ") || "",
-        seo_title: post.seo_title || post.title,
-        seo_description: post.seo_description || post.excerpt || "",
+        coverImageUrl: post.coverImageUrl || "",
+        metaTitle: post.metaTitle || post.title,
+        metaDescription: post.metaDescription || post.excerpt || "",
       });
       setPostStatus(post.status || "draft");
       setScheduledDate(
-        post.scheduled_at ? new Date(post.scheduled_at) : undefined
+        post.scheduledFor ? new Date(post.scheduledFor) : undefined
       );
     } else {
       form.reset({
@@ -173,12 +136,9 @@ const ManageBlog = () => {
         slug: "",
         excerpt: "",
         content: "",
-        cover_image_url: "",
-        author_name: "Roberto Vicente da Silva",
-        author_avatar_url: profileImageUrl,
-        asset_urls: "",
-        seo_title: "",
-        seo_description: "",
+        coverImageUrl: "",
+        metaTitle: "",
+        metaDescription: "",
       });
       setPostStatus("draft");
       setScheduledDate(undefined);
@@ -191,61 +151,34 @@ const ManageBlog = () => {
     setIsDeleteDialogOpen(true);
   };
 
-  const handleAssetUpload = async (
+  const handleImageUpload = async (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
-    const files = event.target.files;
-    if (!files || files.length === 0) return;
+    const file = event.target.files?.[0];
+    if (!file) return;
 
     setIsUploading(true);
-    const toastId = showLoading(`Enviando ${files.length} arquivo(s)...`);
-    const slug = form.getValues("slug") || "post-sem-slug";
-    const uploadedUrls: string[] = [];
+    const toastId = showLoading("Enviando imagem...");
 
-    for (const file of Array.from(files)) {
-      const fileExt = file.name.split(".").pop();
-      const fileName = `${slug}-${Date.now()}.${fileExt}`;
-      const filePath = `${slug}/${fileName}`;
+    try {
+      const { data } = await api.uploads.blog(file);
+      const imageUrl = data.url;
 
-      const { error } = await supabase.storage
-        .from("blog-assets")
-        .upload(filePath, file);
-
-      if (error) {
-        showError(`Falha no upload de ${file.name}: ${error.message}`);
-        console.error(error);
-        continue;
-      }
-
-      const { data } = supabase.storage
-        .from("blog-assets")
-        .getPublicUrl(filePath);
-      uploadedUrls.push(data.publicUrl);
+      form.setValue("coverImageUrl", imageUrl, { shouldDirty: true });
+      dismissToast(toastId);
+      showSuccess("Imagem enviada com sucesso!");
+    } catch (error) {
+      dismissToast(toastId);
+      showError("Falha no upload da imagem.");
+      console.error(error);
+    } finally {
+      setIsUploading(false);
     }
-
-    dismissToast(toastId);
-    if (uploadedUrls.length > 0) {
-      showSuccess(`${uploadedUrls.length} arquivo(s) enviados com sucesso!`);
-
-      const currentCoverImage = form.getValues("cover_image_url");
-      if (!currentCoverImage) {
-        form.setValue("cover_image_url", uploadedUrls[0], {
-          shouldDirty: true,
-        });
-      }
-
-      const existingUrls = form.getValues("asset_urls");
-      const newUrls = existingUrls
-        ? `${existingUrls}, ${uploadedUrls.join(", ")}`
-        : uploadedUrls.join(", ");
-      form.setValue("asset_urls", newUrls, { shouldDirty: true });
-    }
-    setIsUploading(false);
   };
 
   const onSubmit = async (values: PostFormValues) => {
     // Determinar o status baseado no agendamento
-    let finalStatus: "draft" | "scheduled" | "published" | "archived" = "draft";
+    let finalStatus: "draft" | "scheduled" | "published" = "draft";
     if (scheduledDate) {
       finalStatus = scheduledDate > new Date() ? "scheduled" : "published";
     } else if (postStatus === "published") {
@@ -256,43 +189,41 @@ const ManageBlog = () => {
 
     const transformedValues = {
       ...values,
-      asset_urls: values.asset_urls
-        ? values.asset_urls
-            .split(",")
-            .map((url) => url.trim())
-            .filter(Boolean)
-        : [],
       status: finalStatus,
-      scheduled_at: scheduledDate?.toISOString() || null,
+      scheduledFor: scheduledDate?.toISOString() || undefined,
     };
 
-    if (selectedPost) {
-      const { error } = await supabase
-        .from("posts")
-        .update(transformedValues)
-        .eq("id", selectedPost.id);
-      if (error) showError("Erro ao atualizar post.");
-      else showSuccess("Post atualizado com sucesso!");
-    } else {
-      const { error } = await supabase.from("posts").insert(transformedValues);
-      if (error) showError("Erro ao criar post.");
-      else showSuccess("Post criado com sucesso!");
+    try {
+      if (selectedPost) {
+        await api.posts.update(selectedPost.id, transformedValues);
+        showSuccess("Post atualizado com sucesso!");
+      } else {
+        await api.posts.create(transformedValues);
+        showSuccess("Post criado com sucesso!");
+      }
+      await fetchPosts();
+      setIsDialogOpen(false);
+    } catch (error) {
+      showError(
+        selectedPost ? "Erro ao atualizar post." : "Erro ao criar post."
+      );
+      console.error(error);
     }
-    await fetchPosts();
-    setIsDialogOpen(false);
   };
 
   const onDeleteConfirm = async () => {
     if (!selectedPost) return;
-    const { error } = await supabase
-      .from("posts")
-      .delete()
-      .eq("id", selectedPost.id);
-    if (error) showError("Erro ao excluir post.");
-    else showSuccess("Post excluído com sucesso!");
-    await fetchPosts();
-    setIsDeleteDialogOpen(false);
-    setSelectedPost(null);
+
+    try {
+      await api.posts.delete(selectedPost.id);
+      showSuccess("Post excluído com sucesso!");
+      await fetchPosts();
+      setIsDeleteDialogOpen(false);
+      setSelectedPost(null);
+    } catch (error) {
+      showError("Erro ao excluir post.");
+      console.error(error);
+    }
   };
 
   return (
@@ -312,6 +243,7 @@ const ManageBlog = () => {
           <TableHeader>
             <TableRow className="border-gray-700">
               <TableHead className="text-white">Título</TableHead>
+              <TableHead className="text-white">Status</TableHead>
               <TableHead className="text-white">Data de Criação</TableHead>
               <TableHead className="text-right text-white">Ações</TableHead>
             </TableRow>
@@ -319,16 +251,38 @@ const ManageBlog = () => {
           <TableBody>
             {loading ? (
               <TableRow>
-                <TableCell colSpan={3} className="text-center text-gray-400">
+                <TableCell colSpan={4} className="text-center text-gray-400">
                   Carregando...
+                </TableCell>
+              </TableRow>
+            ) : posts.length === 0 ? (
+              <TableRow>
+                <TableCell colSpan={4} className="text-center text-gray-400">
+                  Nenhum post encontrado
                 </TableCell>
               </TableRow>
             ) : (
               posts.map((post) => (
                 <TableRow key={post.id} className="border-gray-700">
-                  <TableCell>{post.title}</TableCell>
-                  <TableCell>
-                    {new Date(post.created_at).toLocaleDateString("pt-BR")}
+                  <TableCell className="text-gray-300">{post.title}</TableCell>
+                  <TableCell className="text-gray-300">
+                    <span
+                      className={`px-2 py-1 rounded text-xs ${post.status === "published"
+                          ? "bg-green-900/50 text-green-300"
+                          : post.status === "scheduled"
+                            ? "bg-blue-900/50 text-blue-300"
+                            : "bg-gray-700 text-gray-300"
+                        }`}
+                    >
+                      {post.status === "published"
+                        ? "Publicado"
+                        : post.status === "scheduled"
+                          ? "Agendado"
+                          : "Rascunho"}
+                    </span>
+                  </TableCell>
+                  <TableCell className="text-gray-300">
+                    {new Date(post.createdAt).toLocaleDateString("pt-BR")}
                   </TableCell>
                   <TableCell className="text-right">
                     <Button
@@ -399,39 +353,7 @@ const ManageBlog = () => {
               />
               <FormField
                 control={form.control}
-                name="author_name"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Nome do Autor</FormLabel>
-                    <FormControl>
-                      <Input
-                        {...field}
-                        className="bg-gray-700 border-gray-600"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="author_avatar_url"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>URL do Avatar do Autor</FormLabel>
-                    <FormControl>
-                      <Input
-                        {...field}
-                        className="bg-gray-700 border-gray-600"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="cover_image_url"
+                name="coverImageUrl"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>URL da Imagem de Capa (Opcional)</FormLabel>
@@ -447,13 +369,12 @@ const ManageBlog = () => {
               />
 
               <FormItem>
-                <FormLabel>Assets do Carrossel (Imagens ou PDFs)</FormLabel>
+                <FormLabel>Upload de Imagem de Capa</FormLabel>
                 <FormControl>
                   <Input
                     type="file"
-                    multiple
-                    accept="image/*,application/pdf"
-                    onChange={handleAssetUpload}
+                    accept="image/*"
+                    onChange={handleImageUpload}
                     disabled={isUploading}
                     className="bg-gray-700 border-gray-600 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-gray-600 file:text-gray-200 hover:file:bg-gray-500"
                   />
@@ -465,26 +386,6 @@ const ManageBlog = () => {
                   </div>
                 )}
               </FormItem>
-
-              <FormField
-                control={form.control}
-                name="asset_urls"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>
-                      URLs dos Assets (separadas por vírgula)
-                    </FormLabel>
-                    <FormControl>
-                      <Textarea
-                        {...field}
-                        rows={3}
-                        className="bg-gray-700 border-gray-600"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
 
               <FormField
                 control={form.control}
@@ -507,9 +408,7 @@ const ManageBlog = () => {
                 name="content"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>
-                      Conteúdo (HTML - usado se não houver carrossel)
-                    </FormLabel>
+                    <FormLabel>Conteúdo (HTML)</FormLabel>
                     <FormControl>
                       <RichTextEditor
                         value={field.value || ""}
@@ -525,16 +424,16 @@ const ManageBlog = () => {
 
               {/* SEO Editor */}
               <SEOEditor
-                title={form.watch("seo_title") || form.watch("title") || ""}
+                title={form.watch("metaTitle") || form.watch("title") || ""}
                 description={
-                  form.watch("seo_description") || form.watch("excerpt") || ""
+                  form.watch("metaDescription") || form.watch("excerpt") || ""
                 }
                 slug={form.watch("slug") || ""}
-                coverImageUrl={form.watch("cover_image_url") || ""}
+                coverImageUrl={form.watch("coverImageUrl") || ""}
                 content={form.watch("content") || ""}
-                onTitleChange={(value) => form.setValue("seo_title", value)}
+                onTitleChange={(value) => form.setValue("metaTitle", value)}
                 onDescriptionChange={(value) =>
-                  form.setValue("seo_description", value)
+                  form.setValue("metaDescription", value)
                 }
                 onSlugChange={(value) => form.setValue("slug", value)}
               />

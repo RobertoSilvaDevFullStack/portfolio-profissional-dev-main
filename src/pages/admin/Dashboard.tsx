@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import { api } from "@/lib/api-client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Briefcase, FileText, MessageSquare, TrendingUp } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -13,7 +13,7 @@ import {
 } from "@/components/ui/table";
 import VisitChart from "@/components/admin/VisitChart";
 import AdvancedAnalytics from "@/components/admin/AdvancedAnalytics";
-import { subDays, format, parseISO } from "date-fns";
+import { subDays, format } from "date-fns";
 
 interface Stats {
   posts: number;
@@ -64,34 +64,19 @@ const Dashboard = () => {
     const fetchData = async () => {
       setLoading(true);
       try {
-        const thirtyDaysAgo = subDays(new Date(), 30);
+        // Fetch stats from analytics endpoint
+        const { data: statsData } = await api.analytics.getStats();
 
-        const [
-          { count: postsCount },
-          { count: projectsCount },
-          { data: leadsData, count: leadsCount },
-          { data: visitsData, count: totalVisitsCount },
-          { data: clicksData },
-        ] = await Promise.all([
-          supabase.from("posts").select("*", { count: "exact", head: true }),
-          supabase.from("projects").select("*", { count: "exact", head: true }),
-          supabase.from("leads").select("id", { count: "exact" }),
-          supabase
-            .from("page_visits")
-            .select("visited_at", { count: "exact" })
-            .gte("visited_at", thirtyDaysAgo.toISOString()),
-          supabase
-            .from("project_clicks")
-            .select("*, projects(title)")
-            .order("clicked_at", { ascending: false }),
-        ]);
+        // Fetch page visits
+        const { data: visitsResponse } = await api.analytics.getPageVisits({ limit: 1000 });
+        const visits = visitsResponse.visits || [];
 
         // Process visit data for chart
-        const visitsByDay = (visitsData || []).reduce((acc, visit) => {
-          const date = format(parseISO(visit.visited_at), "yyyy-MM-dd");
+        const visitsByDay = visits.reduce((acc: Record<string, number>, visit: any) => {
+          const date = format(new Date(visit.createdAt), "yyyy-MM-dd");
           acc[date] = (acc[date] || 0) + 1;
           return acc;
-        }, {} as Record<string, number>);
+        }, {});
 
         const chartData = Array.from({ length: 30 })
           .map((_, i) => {
@@ -105,32 +90,19 @@ const Dashboard = () => {
           .reverse();
         setVisitData(chartData);
 
-        // Process project click data
-        const clicksByProject = (clicksData || []).reduce<
-          Record<string, number>
-        >((acc, click) => {
-          if (click.projects?.title) {
-            const title = click.projects.title;
-            acc[title] = (acc[title] || 0) + 1;
-          }
-          return acc;
-        }, {});
-
-        const sortedClicks = Object.entries(clicksByProject)
-          .map(([title, count]) => ({ title, count }))
-          .sort((a, b) => b.count - a.count);
-        setProjectClicks(sortedClicks);
+        // Mock project clicks data (would need backend endpoint for real data)
+        setProjectClicks([]);
 
         setStats({
-          posts: postsCount ?? 0,
-          projects: projectsCount ?? 0,
-          totalVisits: totalVisitsCount ?? 0,
-          leads: leadsCount ?? 0,
+          posts: statsData.posts || 0,
+          projects: statsData.projects || 0,
+          totalVisits: statsData.visits || 0,
+          leads: statsData.leads || 0,
         });
 
         // Prepare analytics data
-        const totalVisits = totalVisitsCount ?? 0;
-        const totalLeads = leadsCount ?? 0;
+        const totalVisits = statsData.visits || 0;
+        const totalLeads = statsData.leads || 0;
         const conversionRate =
           totalVisits > 0 ? (totalLeads / totalVisits) * 100 : 0;
 
@@ -249,7 +221,7 @@ const Dashboard = () => {
                     <Skeleton key={i} className="h-10 w-full" />
                   ))}
                 </div>
-              ) : (
+              ) : projectClicks.length > 0 ? (
                 <Table>
                   <TableHeader>
                     <TableRow className="border-gray-700 hover:bg-transparent">
@@ -272,6 +244,10 @@ const Dashboard = () => {
                     ))}
                   </TableBody>
                 </Table>
+              ) : (
+                <p className="text-gray-400 text-center py-4">
+                  Nenhum dado de cliques disponível
+                </p>
               )}
             </CardContent>
           </Card>
