@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
-import { supabase } from "@/integrations/supabase/client";
+import { api } from "@/lib/api-client";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -11,51 +11,65 @@ import PostAssetCarousel from "@/components/PostAssetCarousel";
 import CommentsSection from "@/components/comments/CommentsSection";
 import ShareSection from "@/components/ShareSection";
 
-interface Post {
+interface PostData {
   id: string;
   title: string;
   content: string;
   excerpt: string;
+  coverImageUrl: string;
+  createdAt: string;
+  slug: string;
+  author: {
+    id: string;
+    fullName: string;
+    avatarUrl: string;
+  };
+  // Legacy field names for compatibility - all required
   cover_image_url: string;
   created_at: string;
   author_name: string;
   author_avatar_url: string;
   asset_urls: string[] | null;
-  slug: string;
 }
 
 const BlogPost = () => {
   const { slug } = useParams<{ slug: string }>();
-  const [post, setPost] = useState<Post | null>(null);
+  const [post, setPost] = useState<PostData | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchPost = async () => {
       if (!slug) return;
       setLoading(true);
-      const { data, error } = await supabase
-        .from("posts")
-        .select("*")
-        .eq("slug", slug)
-        .single();
-
-      if (error) {
+      try {
+        const { data } = await api.posts.getBySlug(slug);
+        // Map backend data to component format
+        const mappedPost: PostData = {
+          ...data.post,
+          cover_image_url: data.post.coverImageUrl || '',
+          created_at: data.post.createdAt,
+          author_name: data.post.author?.fullName || 'Autor',
+          author_avatar_url: data.post.author?.avatarUrl || '',
+          asset_urls: null,
+        };
+        setPost(mappedPost);
+      } catch (error) {
         console.error("Error fetching post:", error);
-      } else {
-        setPost(data);
+        setPost(null);
+      } finally {
+        setLoading(false);
       }
-      setLoading(false);
     };
 
     fetchPost();
   }, [slug]);
 
   const postDate = post
-    ? new Date(post.created_at).toLocaleDateString("pt-BR", {
-        day: "numeric",
-        month: "long",
-        year: "numeric",
-      })
+    ? new Date(post.createdAt).toLocaleDateString("pt-BR", {
+      day: "numeric",
+      month: "long",
+      year: "numeric",
+    })
     : "";
 
   const hasCarousel = post?.asset_urls && post.asset_urls.length > 0;
@@ -67,7 +81,7 @@ const BlogPost = () => {
           title={post.title}
           description={post.excerpt || post.content.substring(0, 160)}
           type="article"
-          imageUrl={post.cover_image_url}
+          imageUrl={post.coverImageUrl}
         />
       )}
       <MatrixRain />
@@ -113,9 +127,9 @@ const BlogPost = () => {
                 {hasCarousel ? (
                   <PostAssetCarousel assetUrls={post.asset_urls!} />
                 ) : (
-                  post.cover_image_url && (
+                  post.coverImageUrl && (
                     <img
-                      src={post.cover_image_url}
+                      src={post.coverImageUrl}
                       alt={post.title}
                       className="w-full rounded-lg my-8"
                     />

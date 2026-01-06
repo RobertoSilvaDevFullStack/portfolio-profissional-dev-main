@@ -21,6 +21,7 @@ model User {
 
   posts         Post[]
   comments      Comment[]
+  commentLikes  CommentLike[]
   auditLogs     AuditLog[]
   notifications Notification[]
 
@@ -98,19 +99,39 @@ model Comment {
   authorEmail     String    @map("author_email")
   content         String
   status          String    @default("pending") // pending, approved, rejected, spam
+  parentId        String?   @map("parent_id") // For nested replies
   moderatedBy     String?   @map("moderated_by")
   moderatedAt     DateTime? @map("moderated_at")
   moderationNotes String?   @map("moderation_notes")
   createdAt       DateTime  @default(now()) @map("created_at")
   updatedAt       DateTime  @updatedAt @map("updated_at")
 
-  post   Post  @relation(fields: [postId], references: [id], onDelete: Cascade)
-  author User? @relation(fields: [authorId], references: [id], onDelete: SetNull)
+  post    Post           @relation(fields: [postId], references: [id], onDelete: Cascade)
+  author  User?          @relation(fields: [authorId], references: [id], onDelete: SetNull)
+  parent  Comment?       @relation("CommentReplies", fields: [parentId], references: [id], onDelete: Cascade)
+  replies Comment[]      @relation("CommentReplies")
+  likes   CommentLike[]
 
   @@index([postId])
   @@index([status])
+  @@index([parentId])
   @@index([createdAt(sort: Desc)])
   @@map("comments")
+}
+
+model CommentLike {
+  id        String   @id @default(uuid())
+  commentId String   @map("comment_id")
+  userId    String   @map("user_id")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  comment Comment @relation(fields: [commentId], references: [id], onDelete: Cascade)
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([commentId, userId])
+  @@index([commentId])
+  @@index([userId])
+  @@map("comment_likes")
 }
 
 model PageVisit {

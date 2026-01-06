@@ -2,37 +2,49 @@ import React, { useEffect, useState } from 'react';
 import useEmblaCarousel from 'embla-carousel-react';
 import Autoplay from 'embla-carousel-autoplay';
 import ProjectCard from './ProjectCard';
-import { supabase } from '@/integrations/supabase/client';
+import { api } from '@/lib/api-client';
 import { Skeleton } from '@/components/ui/skeleton';
 
-interface Project {
+interface ProjectData {
   id: string;
   title: string;
   description: string;
+  imageUrl: string;
+  projectUrl: string;
+  githubUrl: string;
+  technologies: string[];
   images: string[];
   link: string;
-  technologies: string[];
 }
 
 const PortfolioSection = (props: React.HTMLAttributes<HTMLElement>) => {
   const [emblaRef] = useEmblaCarousel({ loop: true, align: 'start' }, [Autoplay({ delay: 6000 })]);
-  const [projects, setProjects] = useState<Project[]>([]);
+  const [projects, setProjects] = useState<ProjectData[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchProjects = async () => {
       setLoading(true);
-      const { data, error } = await supabase
-        .from('projects')
-        .select('*')
-        .order('created_at', { ascending: false });
-
-      if (error) {
+      try {
+        const { data } = await api.projects.list('active');
+        // Map backend fields ensuring all required fields exist
+        const mappedProjects: ProjectData[] = data.projects.map((p: any) => ({
+          id: p.id,
+          title: p.title,
+          description: p.description || '',
+          imageUrl: p.imageUrl || '',
+          projectUrl: p.projectUrl || '',
+          githubUrl: p.githubUrl || '',
+          technologies: p.technologies || [],
+          images: p.imageUrl ? [p.imageUrl] : [],
+          link: p.projectUrl || p.githubUrl || '#',
+        }));
+        setProjects(mappedProjects);
+      } catch (error) {
         console.error('Error fetching projects:', error);
-      } else {
-        setProjects(data);
+      } finally {
+        setLoading(false);
       }
-      setLoading(false);
     };
 
     fetchProjects();

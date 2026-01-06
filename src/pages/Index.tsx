@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
 import Header from "@/components/Header";
 import HeroSection from "@/components/HeroSection";
 import AboutSection from "@/components/AboutSection";
@@ -14,36 +13,15 @@ import MatrixRain from "@/components/MatrixRain";
 import SEO from "@/components/SEO";
 
 const Index = () => {
-  const [seoData, setSeoData] = useState({ 
-    title: 'Desenvolvedor Web Full-Stack', 
-    description: 'Portfóflio de Roberto Vicente da Silva, desenvolvedor web especializado em criar soluções digitais modernas e eficientes.' 
+  const [seoData] = useState({
+    title: 'Desenvolvedor Web Full-Stack',
+    description: 'Portfólio de Roberto Vicente da Silva, desenvolvedor web especializado em criar soluções digitais modernas e eficientes.'
   });
 
+  // Page visit tracking can be added later via analytics API
   useEffect(() => {
-    const logVisit = async () => {
-      try {
-        await supabase.from('page_visits').insert({});
-      } catch (error) {
-        console.error("Error logging page visit:", error);
-      }
-    };
-    logVisit();
-
-    const fetchSeoData = async () => {
-      const { data, error } = await supabase
-        .from('site_content')
-        .select('hero_title, hero_description')
-        .eq('id', 1)
-        .single();
-
-      if (!error && data) {
-        setSeoData({
-          title: data.hero_title,
-          description: data.hero_description,
-        });
-      }
-    };
-    fetchSeoData();
+    // Optional: Log page visit
+    // api.analytics.logVisit({ page: '/' });
   }, []);
 
   return (

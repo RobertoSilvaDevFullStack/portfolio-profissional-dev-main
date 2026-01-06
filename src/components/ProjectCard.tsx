@@ -4,7 +4,6 @@ import Autoplay from 'embla-carousel-autoplay';
 import { ArrowLeft, ArrowRight, FileText } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { supabase } from '@/integrations/supabase/client';
 
 type Project = {
   id: string;
@@ -30,13 +29,7 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project }) => {
     if (emblaApi) emblaApi.scrollNext();
   }, [emblaApi]);
 
-  const handleProjectClick = async () => {
-    try {
-      await supabase.from('project_clicks').insert({ project_id: project.id });
-    } catch (error) {
-      console.error('Error logging project click:', error);
-    }
-  };
+  // Project click analytics removed - can be added later via API if needed
 
   const sanitizeTechName = (name: string) => {
     return name
@@ -94,8 +87,8 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project }) => {
         <div>
           <h4 className="font-semibold text-gray-200 mb-2">Tecnologias:</h4>
           {sanitizedTechnologies && (
-            <img 
-              src={`https://skillicons.dev/icons?i=${sanitizedTechnologies}`} 
+            <img
+              src={`https://skillicons.dev/icons?i=${sanitizedTechnologies}`}
               alt="Tecnologias usadas no projeto"
               className="h-8"
             />
@@ -103,7 +96,7 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project }) => {
         </div>
       </CardContent>
       <CardFooter>
-        <a href={project.link} target="_blank" rel="noopener noreferrer" className="w-full" onClick={handleProjectClick}>
+        <a href={project.link} target="_blank" rel="noopener noreferrer" className="w-full">
           <Button className="w-full bg-light-cyan text-dark-navy hover:bg-light-cyan/90 font-semibold">
             Visitar Projeto
           </Button>

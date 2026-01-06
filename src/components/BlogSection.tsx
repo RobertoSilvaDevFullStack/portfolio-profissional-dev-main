@@ -1,36 +1,45 @@
 import React, { useEffect, useState } from 'react';
-import { supabase } from '@/integrations/supabase/client';
+import { api } from '@/lib/api-client';
 import PostCard from './PostCard';
 import { Skeleton } from '@/components/ui/skeleton';
 
-interface Post {
+interface PostData {
   id: string;
   title: string;
   slug: string;
   excerpt: string;
+  coverImageUrl: string;
+  createdAt: string;
   cover_image_url: string;
   created_at: string;
 }
 
 const BlogSection = (props: React.HTMLAttributes<HTMLElement>) => {
-  const [posts, setPosts] = useState<Post[]>([]);
+  const [posts, setPosts] = useState<PostData[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchPosts = async () => {
       setLoading(true);
-      const { data, error } = await supabase
-        .from('posts')
-        .select('*')
-        .order('created_at', { ascending: false })
-        .limit(3);
-
-      if (error) {
+      try {
+        const { data } = await api.posts.list('published');
+        // Map to ensure all required fields exist
+        const mappedPosts: PostData[] = data.posts.slice(0, 3).map((p: any) => ({
+          id: p.id,
+          title: p.title,
+          slug: p.slug,
+          excerpt: p.excerpt || '',
+          coverImageUrl: p.coverImageUrl || '',
+          createdAt: p.createdAt,
+          cover_image_url: p.coverImageUrl || '',
+          created_at: p.createdAt,
+        }));
+        setPosts(mappedPosts);
+      } catch (error) {
         console.error('Error fetching posts:', error);
-      } else {
-        setPosts(data);
+      } finally {
+        setLoading(false);
       }
-      setLoading(false);
     };
 
     fetchPosts();

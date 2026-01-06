@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { supabase } from "@/integrations/supabase/client";
+import { api } from "@/lib/api-client";
 import { showSuccess, showError } from "@/utils/toast";
 import { Loader2 } from "lucide-react";
 
@@ -20,16 +20,16 @@ const ContactSection = (props: React.HTMLAttributes<HTMLElement>) => {
     e.preventDefault();
     setLoading(true);
 
-    const { error } = await supabase.from('leads').insert(formData);
-
-    if (error) {
-      showError("Ocorreu um erro ao enviar sua mensagem. Tente novamente.");
-      console.error("Contact form error:", error);
-    } else {
+    try {
+      await api.leads.create(formData);
       showSuccess("Mensagem enviada com sucesso! Entrarei em contato em breve.");
       setFormData({ name: '', email: '', phone: '', message: '' });
+    } catch (error) {
+      showError("Ocorreu um erro ao enviar sua mensagem. Tente novamente.");
+      console.error("Contact form error:", error);
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   return (

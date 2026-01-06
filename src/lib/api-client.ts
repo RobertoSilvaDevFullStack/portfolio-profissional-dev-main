@@ -90,8 +90,10 @@ export const api = {
     comments: {
         getByPost: (postId: string) => apiClient.get(`/comments/post/${postId}`),
         create: (data: any) => apiClient.post('/comments', data),
+        update: (id: string, data: any) => apiClient.put(`/comments/${id}`, data),
         moderate: (id: string, data: any) => apiClient.put(`/comments/${id}/moderate`, data),
         delete: (id: string) => apiClient.delete(`/comments/${id}`),
+        toggleLike: (id: string) => apiClient.post(`/comments/${id}/like`),
     },
 
     // Uploads
