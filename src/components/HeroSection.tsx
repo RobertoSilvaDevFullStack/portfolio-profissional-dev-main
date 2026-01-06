@@ -1,14 +1,11 @@
 import { Button } from '@/components/ui/button';
 import { useEffect, useState } from 'react';
-import { supabase } from '@/integrations/supabase/client';
-import { Skeleton } from '@/components/ui/skeleton';
 
 interface HeroContent {
   hero_title: string;
   hero_subtitle: string;
   hero_description: string;
   hero_image_url: string;
-  updated_at: string;
 }
 
 const HeroSection = (props: React.HTMLAttributes<HTMLElement>) => {
@@ -16,26 +13,25 @@ const HeroSection = (props: React.HTMLAttributes<HTMLElement>) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchContent = async () => {
+    // Simulating fetch with hardcoded data to replace Supabase dependency
+    const loadContent = () => {
       setLoading(true);
-      const { data, error } = await supabase
-        .from('site_content')
-        .select('hero_title, hero_subtitle, hero_description, hero_image_url, updated_at')
-        .eq('id', 1)
-        .single();
 
-      if (error) {
-        console.error('Error fetching hero content:', error);
-      } else {
-        setContent(data);
-      }
+      const staticData = {
+        hero_title: "Olá, sou Roberto Vicente da Silva.",
+        hero_subtitle: "Desenvolvedor Full-Stack em Formação",
+        hero_description: "Desenvolvimento de aplicações web responsivas e funcionais, unindo conhecimentos técnicos em programação com experiência comercial e em marketing digital. Busco criar soluções que combinem usabilidade, performance e resultados para o negócio.",
+        hero_image_url: "/lovable-uploads/27145738-f86a-4933-9137-25d259501570.png"
+      };
+
+      setContent(staticData);
       setLoading(false);
     };
 
-    fetchContent();
+    loadContent();
   }, []);
 
-  const imageUrlWithCacheBust = content ? `${content.hero_image_url}?t=${new Date(content.updated_at).getTime()}` : "/placeholder.svg";
+  const imageUrlWithCacheBust = content?.hero_image_url || "/placeholder.svg";
 
   return (
     <section {...props} className="w-full">
@@ -44,10 +40,7 @@ const HeroSection = (props: React.HTMLAttributes<HTMLElement>) => {
           <div className="text-center md:text-left">
             {loading ? (
               <div className="space-y-4">
-                <Skeleton className="h-12 w-full" />
-                <Skeleton className="h-8 w-1/2" />
-                <Skeleton className="h-24 w-full" />
-                <Skeleton className="h-12 w-40" />
+                {/* Skeleton loader removed for brevity/static load */}
               </div>
             ) : content ? (
               <>
@@ -72,7 +65,7 @@ const HeroSection = (props: React.HTMLAttributes<HTMLElement>) => {
           </div>
           <div className="flex justify-center">
             {loading ? (
-              <Skeleton className="rounded-full w-64 h-64 md:w-80 md:h-80" />
+              <div className="rounded-full w-64 h-64 md:w-80 md:h-80 bg-gray-700 animate-pulse" />
             ) : (
               <img
                 src={imageUrlWithCacheBust}

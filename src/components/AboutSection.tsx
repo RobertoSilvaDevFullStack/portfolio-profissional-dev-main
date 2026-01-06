@@ -1,7 +1,5 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { useEffect, useState } from 'react';
-import { supabase } from '@/integrations/supabase/client';
-import { Skeleton } from '@/components/ui/skeleton';
 
 interface AboutContent {
   about_professional_profile: string;
@@ -13,23 +11,18 @@ const AboutSection = (props: React.HTMLAttributes<HTMLElement>) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchContent = async () => {
+    // Simulating fetch with hardcoded data
+    const loadContent = () => {
       setLoading(true);
-      const { data, error } = await supabase
-        .from('site_content')
-        .select('about_professional_profile, about_experience_summary')
-        .eq('id', 1)
-        .single();
-
-      if (error) {
-        console.error('Error fetching about content:', error);
-      } else {
-        setContent(data);
-      }
+      const staticData = {
+        about_professional_profile: "Sou um desenvolvedor Web Full-Stack em formação, com background em suporte técnico e desenvolvimento de sistemas. Controle de demandas (SLA, Trello).\n\nMetodologia\nAcredito em código limpo, bem documentado e testes automatizados.",
+        about_experience_summary: "Habilidades Técnicas\nHTML, CSS, JavaScript, React, Node.js, TypeScript.\n\nExperiência Comercial\nAtendimento ao cliente, negociação e gestão de projetos."
+      };
+      setContent(staticData);
       setLoading(false);
     };
 
-    fetchContent();
+    loadContent();
   }, []);
 
   const renderProfileWithSubtitles = (text: string) => {
@@ -39,7 +32,7 @@ const AboutSection = (props: React.HTMLAttributes<HTMLElement>) => {
       "Diferencial Competitivo",
       "Visão de Mercado"
     ];
-    
+
     const regex = new RegExp(`(${subtitles.join('|')})`, 'g');
     const parts = text.split(regex).filter(part => part.trim() !== '');
 
@@ -56,7 +49,7 @@ const AboutSection = (props: React.HTMLAttributes<HTMLElement>) => {
             <p className="text-gray-300">{content}</p>
           </div>
         );
-        i++; 
+        i++;
       } else {
         if (isFirstParagraph) {
           elements.push(<p key="initial-paragraph" className="text-gray-300">{part}</p>);
@@ -75,7 +68,7 @@ const AboutSection = (props: React.HTMLAttributes<HTMLElement>) => {
       "Diferenciais Competitivos",
       "Objetivos Profissionais"
     ];
-    
+
     const lines = text.split('\n').filter(line => line.trim() !== '');
     const sections: { subtitle: string; items: string[] }[] = [];
     let currentSection: { subtitle: string; items: string[] } | null = null;
@@ -117,7 +110,7 @@ const AboutSection = (props: React.HTMLAttributes<HTMLElement>) => {
         </div>
         <div className="max-w-4xl mx-auto text-left">
           {loading ? (
-            <Skeleton className="h-96 w-full" />
+            <div className="h-96 w-full bg-gray-700 animate-pulse rounded-md" />
           ) : content ? (
             <Card className="bg-gray-800 border-gray-700 text-gray-300">
               <CardContent className="p-6 md:p-8 space-y-8">
