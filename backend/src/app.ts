@@ -9,6 +9,9 @@ import projectsRoutes from './routes/projects.routes.js';
 import leadsRoutes from './routes/leads.routes.js';
 import commentsRoutes from './routes/comments.routes.js';
 import uploadsRoutes from './routes/uploads.routes.js';
+import notificationsRoutes from './routes/notifications.routes.js';
+import auditLogsRoutes from './routes/auditLogs.routes.js';
+import analyticsRoutes from './routes/analytics.routes.js';
 
 const app = express();
 
@@ -46,6 +49,9 @@ app.use('/api/projects', projectsRoutes);
 app.use('/api/leads', leadsRoutes);
 app.use('/api/comments', commentsRoutes);
 app.use('/api/uploads', uploadsRoutes);
+app.use('/api/notifications', notificationsRoutes);
+app.use('/api/audit-logs', auditLogsRoutes);
+app.use('/api/analytics', analyticsRoutes);
 
 // Static files (uploads)
 app.use('/uploads', express.static(process.env.UPLOAD_DIR || './uploads'));

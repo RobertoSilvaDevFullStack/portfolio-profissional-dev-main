@@ -122,4 +122,27 @@ export const api = {
         delete: (category: string, filename: string) =>
             apiClient.delete(`/uploads/${category}/${filename}`),
     },
+
+    // Notifications
+    notifications: {
+        list: () => apiClient.get('/notifications'),
+        markAsRead: (id: string) => apiClient.put(`/notifications/${id}/read`),
+        markAllAsRead: () => apiClient.put('/notifications/read-all'),
+        delete: (id: string) => apiClient.delete(`/notifications/${id}`),
+    },
+
+    // Audit Logs
+    auditLogs: {
+        list: (params?: { limit?: number; offset?: number; action?: string; userId?: string }) =>
+            apiClient.get('/audit-logs', { params }),
+    },
+
+    // Analytics
+    analytics: {
+        getStats: () => apiClient.get('/analytics/stats'),
+        logPageVisit: (data: { page: string; referrer?: string; userAgent?: string }) =>
+            apiClient.post('/analytics/page-visit', data),
+        getPageVisits: (params?: { limit?: number; page?: string }) =>
+            apiClient.get('/analytics/page-visits', { params }),
+    },
 };
