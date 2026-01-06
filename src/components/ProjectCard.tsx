@@ -81,21 +81,21 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project }) => {
           )}
         </div>
       </CardHeader>
-      <CardContent className="flex-grow">
-        <CardTitle className="text-light-cyan mb-2">{project.title}</CardTitle>
-        <CardDescription className="text-gray-300 mb-4 whitespace-pre-wrap">{project.description}</CardDescription>
+      <CardContent className="flex-grow p-4 md:p-6">
+        <CardTitle className="text-light-cyan mb-2 text-lg md:text-xl">{project.title}</CardTitle>
+        <CardDescription className="text-gray-300 mb-3 md:mb-4 whitespace-pre-wrap text-sm md:text-base line-clamp-3 md:line-clamp-none">{project.description}</CardDescription>
         <div>
-          <h4 className="font-semibold text-gray-200 mb-2">Tecnologias:</h4>
+          <h4 className="font-semibold text-gray-200 mb-1.5 md:mb-2 text-sm">Tecnologias:</h4>
           {sanitizedTechnologies && (
             <img
               src={`https://skillicons.dev/icons?i=${sanitizedTechnologies}`}
               alt="Tecnologias usadas no projeto"
-              className="h-8"
+              className="h-7 md:h-8"
             />
           )}
         </div>
       </CardContent>
-      <CardFooter>
+      <CardFooter className="p-4 md:p-6 pt-2 md:pt-6">
         <a href={project.link} target="_blank" rel="noopener noreferrer" className="w-full">
           <Button className="w-full bg-light-cyan text-dark-navy hover:bg-light-cyan/90 font-semibold">
             Visitar Projeto

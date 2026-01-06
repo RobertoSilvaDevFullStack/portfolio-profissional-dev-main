@@ -30,12 +30,20 @@ const SkillsSection = (props: React.HTMLAttributes<HTMLElement>) => {
               <h3 className="text-xl md:text-2xl font-semibold text-light-cyan">
                 {skillGroup.category}
               </h3>
-              <div className="flex justify-center transition-transform hover:scale-105 duration-300">
-                <img
-                  src={`https://skillicons.dev/icons?i=${skillGroup.icons}&theme=dark`}
-                  alt={`${skillGroup.category} icons`}
-                  className="h-14 md:h-16 lg:h-20"
-                />
+              <div className="relative overflow-hidden rounded-lg p-4">
+                {/* Light beam effect */}
+                <div className="absolute inset-0 pointer-events-none">
+                  <div className="absolute inset-0 animate-light-sweep bg-gradient-to-r from-transparent via-light-cyan/20 to-transparent"></div>
+                </div>
+
+                {/* Skills icons */}
+                <div className="relative flex justify-center transition-transform hover:scale-105 duration-300">
+                  <img
+                    src={`https://skillicons.dev/icons?i=${skillGroup.icons}&theme=dark`}
+                    alt={`${skillGroup.category} icons`}
+                    className="h-14 md:h-16 lg:h-20"
+                  />
+                </div>
               </div>
             </div>
           ))}

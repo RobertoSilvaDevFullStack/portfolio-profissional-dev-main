@@ -1,5 +1,6 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { useEffect, useState } from 'react';
+import AboutCarousel from './AboutCarousel';
 
 interface AboutContent {
   about_professional_profile: string;
@@ -112,19 +113,27 @@ const AboutSection = (props: React.HTMLAttributes<HTMLElement>) => {
           {loading ? (
             <div className="h-96 w-full bg-gray-700 animate-pulse rounded-md" />
           ) : content ? (
-            <Card className="bg-gray-800 border-gray-700 text-gray-300">
-              <CardContent className="p-6 md:p-8 space-y-8">
-                <div>
-                  <h3 className="text-2xl font-bold text-light-cyan mb-4">Perfil Profissional</h3>
-                  {renderProfileWithSubtitles(content.about_professional_profile)}
-                </div>
-                <div className="border-t border-gray-700"></div>
-                <div>
-                  <h3 className="text-2xl font-bold text-light-cyan mb-4">Resumo da Experiência</h3>
-                  {renderExperienceSummary(content.about_experience_summary)}
-                </div>
-              </CardContent>
-            </Card>
+            <>
+              {/* Mobile: Carousel */}
+              <div className="block md:hidden">
+                <AboutCarousel content={content.about_professional_profile} />
+              </div>
+
+              {/* Desktop: Card */}
+              <Card className="hidden md:block bg-gray-800 border-gray-700 text-gray-300">
+                <CardContent className="p-6 md:p-8 space-y-8">
+                  <div>
+                    <h3 className="text-2xl font-bold text-light-cyan mb-4">Perfil Profissional</h3>
+                    {renderProfileWithSubtitles(content.about_professional_profile)}
+                  </div>
+                  <div className="border-t border-gray-700"></div>
+                  <div>
+                    <h3 className="text-2xl font-bold text-light-cyan mb-4">Resumo da Experiência</h3>
+                    {renderExperienceSummary(content.about_experience_summary)}
+                  </div>
+                </CardContent>
+              </Card>
+            </>
           ) : (
             <p>Conteúdo não encontrado.</p>
           )}

@@ -55,20 +55,37 @@ const BlogSection = (props: React.HTMLAttributes<HTMLElement>) => {
             Compartilhando insights sobre desenvolvimento, tecnologia e carreira.
           </p>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        {/* Mobile: Horizontal Scroll Carousel */}
+        <div className="md:hidden overflow-x-auto snap-x snap-mandatory scrollbar-hide">
+          <div className="flex gap-4 pb-4">
+            {loading ? (
+              Array.from({ length: 3 }).map((_, index) => (
+                <div key={index} className="flex-[0_0_85%] snap-center">
+                  <Skeleton className="h-96 w-full bg-gray-700" />
+                </div>
+              ))
+            ) : posts.length > 0 ? (
+              posts.map((post) => (
+                <div key={post.id} className="flex-[0_0_85%] snap-center">
+                  <PostCard post={post} />
+                </div>
+              ))
+            ) : (
+              <p className="text-gray-400">Nenhum post encontrado.</p>
+            )}
+          </div>
+        </div>
+
+        {/* Desktop: Grid */}
+        <div className="hidden md:grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {loading ? (
             Array.from({ length: 3 }).map((_, index) => (
-              <div key={index} className="flex flex-col space-y-3">
-                <Skeleton className="h-[192px] w-full rounded-xl" />
-                <div className="space-y-2 p-4">
-                  <Skeleton className="h-6 w-3/4" />
-                  <Skeleton className="h-4 w-full" />
-                  <Skeleton className="h-4 w-5/6" />
-                </div>
-              </div>
+              <Skeleton key={index} className="h-96 w-full bg-gray-700" />
             ))
-          ) : (
+          ) : posts.length > 0 ? (
             posts.map((post) => <PostCard key={post.id} post={post} />)
+          ) : (
+            <p className="text-gray-400">Nenhum post encontrado.</p>
           )}
         </div>
       </div>

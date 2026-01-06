@@ -1,6 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Code, Share2, Zap, Wrench, Settings } from 'lucide-react';
 import React from 'react';
+import ServicesCarousel from './ServicesCarousel';
 
 const ServicesSection = (props: React.HTMLAttributes<HTMLElement>) => {
   const services = [
@@ -38,7 +39,13 @@ const ServicesSection = (props: React.HTMLAttributes<HTMLElement>) => {
           <h2 className="text-3xl md:text-4xl font-bold text-white">O Que Eu Ofereço</h2>
           <div className="w-24 h-1 bg-light-cyan mx-auto mt-4"></div>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        {/* Mobile: Carousel */}
+        <div className="block md:hidden">
+          <ServicesCarousel />
+        </div>
+
+        {/* Desktop: Grid */}
+        <div className="hidden md:grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {services.map((service, index) => {
             const IconComponent = service.icon;
             return (
