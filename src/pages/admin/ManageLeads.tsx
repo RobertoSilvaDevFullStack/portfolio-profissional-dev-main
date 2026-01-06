@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import { api } from "@/lib/api-client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Table,
@@ -41,6 +41,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import DeleteConfirmationDialog from "@/components/admin/DeleteConfirmationDialog";
+import { Label } from "@/components/ui/label";
 
 interface Lead {
   id: string;
@@ -48,7 +49,7 @@ interface Lead {
   email: string;
   phone: string;
   message: string;
-  created_at: string;
+  createdAt: string;
   status?: "new" | "contacted" | "qualified" | "converted";
 }
 
@@ -68,13 +69,8 @@ const ManageLeads = () => {
   const fetchLeads = async () => {
     setLoading(true);
     try {
-      const { data, error } = await supabase
-        .from("leads")
-        .select("*")
-        .order("created_at", { ascending: false });
-
-      if (error) throw error;
-      setLeads(data || []);
+      const { data } = await api.leads.list();
+      setLeads(data.leads || []);
     } catch (error) {
       console.error("Erro ao buscar leads:", error);
       showError("Erro ao carregar leads");
@@ -85,10 +81,7 @@ const ManageLeads = () => {
 
   const handleDeleteLead = async (id: string) => {
     try {
-      const { error } = await supabase.from("leads").delete().eq("id", id);
-
-      if (error) throw error;
-
+      await api.leads.delete(id);
       setLeads(leads.filter((lead) => lead.id !== id));
       showSuccess("Lead excluído com sucesso!");
     } catch (error) {
@@ -117,13 +110,13 @@ const ManageLeads = () => {
       lead.email,
       lead.phone,
       lead.message,
-      format(parseISO(lead.created_at), "dd/MM/yyyy HH:mm", { locale: ptBR }),
+      format(parseISO(lead.createdAt), "dd/MM/yyyy HH:mm", { locale: ptBR }),
     ]);
 
     const csvContent = [
       headers.join(","),
       ...csvData.map((row) => row.map((cell) => `"${cell}"`).join(",")),
-    ].join("\n");
+    ].join("\\n");
 
     const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
     const link = document.createElement("a");
@@ -262,7 +255,7 @@ const ManageLeads = () => {
                     <TableCell className="text-gray-300">
                       <div className="flex items-center gap-2">
                         <Calendar className="h-4 w-4 text-gray-500" />
-                        {format(parseISO(lead.created_at), "dd/MM/yyyy HH:mm", {
+                        {format(parseISO(lead.createdAt), "dd/MM/yyyy HH:mm", {
                           locale: ptBR,
                         })}
                       </div>
@@ -323,7 +316,7 @@ const ManageLeads = () => {
                   </Label>
                   <p className="text-white font-medium mt-1">
                     {format(
-                      parseISO(selectedLead.created_at),
+                      parseISO(selectedLead.createdAt),
                       "dd 'de' MMMM 'de' yyyy 'às' HH:mm",
                       { locale: ptBR }
                     )}
@@ -376,7 +369,7 @@ const ManageLeads = () => {
                   className="flex-1 border-gray-600 hover:bg-gray-700 text-white"
                   onClick={() => {
                     window.location.href = `https://wa.me/${selectedLead.phone.replace(
-                      /\D/g,
+                      /\\D/g,
                       ""
                     )}`;
                   }}
@@ -403,13 +396,5 @@ const ManageLeads = () => {
     </div>
   );
 };
-
-// Label component (caso não exista)
-const Label = ({
-  className,
-  ...props
-}: React.HTMLAttributes<HTMLLabelElement>) => (
-  <label className={className} {...props} />
-);
 
 export default ManageLeads;
