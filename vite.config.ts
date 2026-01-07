@@ -11,6 +11,9 @@ export default defineConfig(() => ({
   plugins: [
     dyadComponentTagger(),
     react(),
+    // PWA temporarily disabled to fix build hanging issue
+    // Will re-enable after investigating the build problem
+    // VitePWA({...})
   ],
   resolve: {
     alias: {
@@ -18,15 +21,15 @@ export default defineConfig(() => ({
     },
   },
   build: {
-    // Conservative optimization that won't break builds
+    // Optimize bundle
     minify: 'terser' as const,
     terserOptions: {
       compress: {
-        drop_console: true,
+        drop_console: true, // Remove console.logs in production
         drop_debugger: true,
       },
     },
-    // Simple code splitting
+    // Code splitting
     rollupOptions: {
       output: {
         manualChunks: {
@@ -35,6 +38,7 @@ export default defineConfig(() => ({
         },
       },
     },
+    // Chunk size warnings
     chunkSizeWarningLimit: 1000,
   },
 }));
