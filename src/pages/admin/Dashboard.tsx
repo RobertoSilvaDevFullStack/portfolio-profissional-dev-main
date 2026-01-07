@@ -91,18 +91,18 @@ const Dashboard = () => {
         setVisitData(chartData);
 
         // Mock project clicks data (replaced with real data)
-        setProjectClicks(statsData.projectClicks || []);
+        setProjectClicks(statsData.data.projectClicks || []);
 
         setStats({
-          posts: statsData.posts || 0,
-          projects: statsData.projects || 0,
-          totalVisits: statsData.visits || 0,
-          leads: statsData.leads || 0,
+          posts: statsData.data.posts || 0,
+          projects: statsData.data.projects || 0,
+          totalVisits: statsData.data.visits || 0,
+          leads: statsData.data.leads || 0,
         });
 
         // Prepare analytics data
-        const totalVisits = statsData.visits || 0;
-        const totalLeads = statsData.leads || 0;
+        const totalVisits = statsData.data.visits || 0;
+        const totalLeads = statsData.data.leads || 0;
         const conversionRate =
           totalVisits > 0 ? (totalLeads / totalVisits) * 100 : 0;
 
@@ -118,8 +118,8 @@ const Dashboard = () => {
             conversionRate,
             trend: 0, // No trend calculation for now
           },
-          popularPosts: statsData.popularPosts || [],
-          trafficSources: statsData.trafficSources || [],
+          popularPosts: statsData.data.popularPosts || [],
+          trafficSources: statsData.data.trafficSources || [],
         });
       } catch (error) {
         console.error("Error fetching dashboard data:", error);
