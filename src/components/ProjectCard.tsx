@@ -96,7 +96,18 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project }) => {
         </div>
       </CardContent>
       <CardFooter className="p-4 md:p-6 pt-2 md:pt-6">
-        <a href={project.link} target="_blank" rel="noopener noreferrer" className="w-full">
+        <a
+          href={project.link}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="w-full"
+          onClick={() => {
+            // Track click without blocking navigation
+            import('@/lib/api-client').then(({ api }) => {
+              api.analytics.logProjectClick(project.id).catch(console.error);
+            });
+          }}
+        >
           <Button className="w-full bg-light-cyan text-dark-navy hover:bg-light-cyan/90 font-semibold">
             Visitar Projeto
           </Button>

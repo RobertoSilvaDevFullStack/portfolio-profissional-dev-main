@@ -144,5 +144,6 @@ export const api = {
             apiClient.post('/analytics/page-visit', data),
         getPageVisits: (params?: { limit?: number; page?: string }) =>
             apiClient.get('/analytics/page-visits', { params }),
+        logProjectClick: (id: string) => apiClient.post(`/analytics/projects/${id}/click`),
     },
 };

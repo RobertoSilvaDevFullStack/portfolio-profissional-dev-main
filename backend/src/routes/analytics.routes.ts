@@ -6,6 +6,7 @@ const router = Router();
 
 // Public route
 router.post('/page-visit', analyticsController.logPageVisit);
+router.post('/projects/:id/click', analyticsController.logProjectClick);
 
 // Protected routes
 router.get('/stats', authenticate, analyticsController.getStats);

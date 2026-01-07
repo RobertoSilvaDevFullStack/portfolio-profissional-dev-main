@@ -90,8 +90,8 @@ const Dashboard = () => {
           .reverse();
         setVisitData(chartData);
 
-        // Mock project clicks data (would need backend endpoint for real data)
-        setProjectClicks([]);
+        // Mock project clicks data (replaced with real data)
+        setProjectClicks(statsData.projectClicks || []);
 
         setStats({
           posts: statsData.posts || 0,
@@ -110,25 +110,16 @@ const Dashboard = () => {
           visitData: chartData.map((item) => ({
             date: item.date,
             visits: item.visits,
-            previousPeriod: Math.floor(item.visits * 0.9), // Mock previous period data
+            previousPeriod: 0, // No historical comparison for now
           })),
           conversionData: {
             leads: totalLeads,
             visits: totalVisits,
             conversionRate,
-            trend: 12.5, // Mock trend data
+            trend: 0, // No trend calculation for now
           },
-          popularPosts: [
-            { title: "Post Exemplo 1", views: 1250, shares: 45 },
-            { title: "Post Exemplo 2", views: 980, shares: 32 },
-            { title: "Post Exemplo 3", views: 756, shares: 28 },
-          ],
-          trafficSources: [
-            { name: "Direto", value: 45 },
-            { name: "Redes Sociais", value: 30 },
-            { name: "Pesquisa Orgânica", value: 15 },
-            { name: "Referências", value: 10 },
-          ],
+          popularPosts: statsData.popularPosts || [],
+          trafficSources: statsData.trafficSources || [],
         });
       } catch (error) {
         console.error("Error fetching dashboard data:", error);
