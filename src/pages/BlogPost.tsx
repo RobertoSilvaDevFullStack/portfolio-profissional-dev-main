@@ -43,13 +43,13 @@ const BlogPost = () => {
       setLoading(true);
       try {
         const { data } = await api.posts.getBySlug(slug);
-        // Map backend data to component format
+        // Map backend data to component format with safe fallbacks
         const mappedPost: PostData = {
           ...data.post,
           cover_image_url: data.post.coverImageUrl || '',
           created_at: data.post.createdAt,
-          author_name: data.post.author?.fullName || 'Autor',
-          author_avatar_url: data.post.author?.avatarUrl || '',
+          author_name: data.post.author?.fullName || 'Roberto Vicente da Silva',
+          author_avatar_url: data.post.author?.avatarUrl || 'https://github.com/robertosilvadevfullstack.png',
           asset_urls: null,
         };
         setPost(mappedPost);
