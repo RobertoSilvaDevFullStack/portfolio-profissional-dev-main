@@ -24,7 +24,7 @@ interface Stats {
 
 interface ProjectClick {
   title: string;
-  count: number;
+  clicks: number;
 }
 
 interface VisitData {
@@ -229,7 +229,7 @@ const Dashboard = () => {
                           {project.title}
                         </TableCell>
                         <TableCell className="text-right text-gray-300">
-                          {project.count}
+                          {project.clicks}
                         </TableCell>
                       </TableRow>
                     ))}
