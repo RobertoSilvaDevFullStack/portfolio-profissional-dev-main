@@ -29,9 +29,8 @@ export const useShare = () => {
     const url = getPostUrl(post.slug);
     return `🚀 ${post.title}
 
-${
-  post.excerpt || post.content.replace(/<[^>]*>/g, "").substring(0, 200) + "..."
-}
+${post.excerpt || post.content.replace(/<[^>]*>/g, "").substring(0, 200) + "..."
+      }
 
 ✨ Principais insights:
 • Dicas práticas de desenvolvimento
@@ -46,9 +45,8 @@ ${
   const createInstagramText = (post: Post) => {
     return `🚀 ${post.title}
 
-${
-  post.excerpt || post.content.replace(/<[^>]*>/g, "").substring(0, 150) + "..."
-}
+${post.excerpt || post.content.replace(/<[^>]*>/g, "").substring(0, 150) + "..."
+      }
 
 💡 Novo post no blog!
 💻 Link no perfil para ler completo
@@ -149,19 +147,10 @@ ${
 
   const generateShareMetrics = async (postId: string, platform: string) => {
     try {
-      // Registrar o compartilhamento no banco de dados
-      const { error } = await supabase.rpc("log_share", {
-        p_post_id: postId,
-        p_platform: platform,
-        p_user_agent: navigator.userAgent,
-        p_referrer: document.referrer || null,
-      });
-
-      if (error) {
-        console.error("Error logging share:", error);
-      } else {
-        console.log(`Share tracked: ${platform} - ${postId}`);
-      }
+      // TODO: Migrate to API endpoint for share tracking
+      console.log(`Share event: ${platform} - ${postId}`);
+      // Temporarily disabled Supabase call to avoid errors
+      // Will be migrated to new API in future update
     } catch (error) {
       console.error("Error tracking share:", error);
     }
