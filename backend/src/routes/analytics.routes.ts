@@ -11,5 +11,6 @@ router.post('/projects/:id/click', analyticsController.logProjectClick);
 // Protected routes
 router.get('/stats', authenticate, analyticsController.getStats);
 router.get('/page-visits', authenticate, analyticsController.getPageVisits);
+router.get('/debug', authenticate, analyticsController.getDebugCounts);
 
 export default router;

@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Analytics</title>
+</head>
+<body>
+    <h1>Testing Analytics API</h1>
+    <button onclick="testPageVisit()">Test Page Visit</button>
+    <button onclick="testProjectClick()">Test Project Click</button>
+    <div id="result"></div>
+
+    <script>
+        const API_URL = 'https://api.robertosilvadevfullstack.cloud/api';
+        
+        async function testPageVisit() {
+            const result = document.getElementById('result');
+            result.innerHTML = 'Testing page visit...';
+            
+            try {
+                const response = await fetch(`${API_URL}/analytics/page-visit`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        page: '/test',
+                        referrer: 'test',
+                        userAgent: navigator.userAgent
+                    })
+                });
+                
+                const data = await response.json();
+                result.innerHTML = `<pre>Status: ${response.status}\n${JSON.stringify(data, null, 2)}</pre>`;
+            } catch (error) {
+                result.innerHTML = `<pre>Error: ${error.message}</pre>`;
+            }
+        }
+        
+        async function testProjectClick() {
+            const result = document.getElementById('result');
+            result.innerHTML = 'Testing project click...';
+            
+            // Use a real project ID from your database
+            const projectId = '1'; // Replace with actual ID
+            
+            try {
+                const response = await fetch(`${API_URL}/analytics/projects/${projectId}/click`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                });
+                
+                const data = await response.json();
+                result.innerHTML = `<pre>Status: ${response.status}\n${JSON.stringify(data, null, 2)}</pre>`;
+            } catch (error) {
+                result.innerHTML = `<pre>Error: ${error.message}</pre>`;
+            }
+        }
+    </script>
+</body>
+</html>

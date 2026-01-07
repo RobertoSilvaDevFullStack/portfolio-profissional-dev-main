@@ -152,3 +152,30 @@ export const getPageVisits = async (req: Request, res: Response, next: NextFunct
         return next(error);
     }
 };
+
+// DEBUG: Get raw counts
+export const getDebugCounts = async (_req: Request, res: Response, next: NextFunction) => {
+    try {
+        const [visits, projects, posts] = await Promise.all([
+            prisma.pageVisit.findMany({ take: 10, orderBy: { createdAt: 'desc' } }),
+            prisma.project.findMany({ take: 5, select: { id: true, title: true, clicks: true } }),
+            prisma.post.findMany({ take: 5, select: { id: true, title: true, viewCount: true } }),
+        ]);
+
+        return res.json({
+            success: true,
+            data: {
+                recentVisits: visits,
+                projects,
+                posts,
+                counts: {
+                    totalVisits: await prisma.pageVisit.count(),
+                    totalProjects: await prisma.project.count(),
+                    totalPosts: await prisma.post.count(),
+                }
+            },
+        });
+    } catch (error) {
+        return next(error);
+    }
+};
