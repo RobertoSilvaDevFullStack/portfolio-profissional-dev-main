@@ -69,7 +69,7 @@ const Dashboard = () => {
 
         // Fetch page visits
         const { data: visitsResponse } = await api.analytics.getPageVisits({ limit: 1000 });
-        const visits = visitsResponse.visits || [];
+        const visits = visitsResponse.data.visits || [];
 
         // Process visit data for chart
         const visitsByDay = visits.reduce((acc: Record<string, number>, visit: any) => {
