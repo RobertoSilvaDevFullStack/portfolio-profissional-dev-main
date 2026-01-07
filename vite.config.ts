@@ -18,61 +18,23 @@ export default defineConfig(() => ({
     },
   },
   build: {
-    // Optimize bundle
+    // Conservative optimization that won't break builds
     minify: 'terser' as const,
     terserOptions: {
       compress: {
         drop_console: true,
         drop_debugger: true,
-        pure_funcs: ['console.log', 'console.info', 'console.debug'],
-        passes: 2, // More aggressive
-      },
-      mangle: {
-        safari10: true,
       },
     },
-    // Code splitting - more aggressive
+    // Simple code splitting
     rollupOptions: {
       output: {
-        manualChunks: (id) => {
-          // Vendor chunks
-          if (id.includes('node_modules')) {
-            if (id.includes('react') || id.includes('react-dom') || id.includes('react-router')) {
-              return 'react-vendor';
-            }
-            if (id.includes('lucide-react')) {
-              return 'ui-vendor';
-            }
-            if (id.includes('@supabase')) {
-              return 'supabase-vendor';
-            }
-            return 'vendor';
-          }
-
-          // Component chunks
-          if (id.includes('/components/admin/')) {
-            return 'admin-components';
-          }
-          if (id.includes('/components/comments/')) {
-            return 'comments';
-          }
+        manualChunks: {
+          'react-vendor': ['react', 'react-dom', 'react-router-dom'],
+          'ui-vendor': ['lucide-react'],
         },
-        // Smaller chunk names
-        chunkFileNames: 'assets/[name]-[hash:8].js',
-        entryFileNames: 'assets/[name]-[hash:8].js',
-        assetFileNames: 'assets/[name]-[hash:8].[ext]',
       },
     },
-    // More aggressive chunk size limit
-    chunkSizeWarningLimit: 500,
-    // CSS code splitting
-    cssCodeSplit: true,
-    // Source maps only for errors
-    sourcemap: false,
-  },
-  // Optimize dependencies
-  optimizeDeps: {
-    include: ['react', 'react-dom', 'react-router-dom'],
-    exclude: ['@supabase/supabase-js'],
+    chunkSizeWarningLimit: 1000,
   },
 }));
