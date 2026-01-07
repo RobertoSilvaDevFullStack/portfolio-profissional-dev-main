@@ -19,7 +19,11 @@ const MatrixRain: React.FC = () => {
 
     const characters = '01';
     const fontSize = 16;
-    const columns = Math.floor(canvas.width / fontSize);
+
+    // Reduce columns on mobile for better performance
+    const isMobile = window.innerWidth < 768;
+    const columnDivisor = isMobile ? fontSize * 2 : fontSize;
+    const columns = Math.floor(canvas.width / columnDivisor);
     const drops: number[] = [];
 
     for (let i = 0; i < columns; i++) {
@@ -35,7 +39,7 @@ const MatrixRain: React.FC = () => {
 
       for (let i = 0; i < drops.length; i++) {
         const text = characters.charAt(Math.floor(Math.random() * characters.length));
-        ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+        ctx.fillText(text, i * columnDivisor, drops[i] * fontSize);
 
         if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
           drops[i] = 0;
@@ -45,12 +49,12 @@ const MatrixRain: React.FC = () => {
       }
     };
 
-    const intervalId = setInterval(draw, 33);
+    // Slower animation on mobile (better performance)
+    const intervalMs = isMobile ? 50 : 33;
+    const intervalId = setInterval(draw, intervalMs);
 
     const handleResize = () => {
       setCanvasDimensions();
-      // Recalcular colunas e gotas no redimensionamento pode ser complexo,
-      // uma abordagem mais simples é recarregar o efeito, mas por agora apenas ajustamos o tamanho.
     };
 
     window.addEventListener('resize', handleResize);
