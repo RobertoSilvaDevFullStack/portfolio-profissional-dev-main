@@ -59,7 +59,13 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project }) => {
                       <span className="mt-2 text-sm text-center px-2 truncate">{url.split('/').pop()}</span>
                     </div>
                   ) : (
-                    <img src={url} alt={`${project.title} screenshot ${index + 1}`} className="w-full h-48 object-cover" />
+                    <img
+                      src={url}
+                      alt={`${project.title} screenshot ${index + 1}`}
+                      className="w-full h-48 object-cover"
+                      loading="lazy"
+                      decoding="async"
+                    />
                   )}
                 </div>
               );
@@ -91,6 +97,8 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project }) => {
               src={`https://skillicons.dev/icons?i=${sanitizedTechnologies}`}
               alt="Tecnologias usadas no projeto"
               className="h-7 md:h-8"
+              loading="lazy"
+              decoding="async"
             />
           )}
         </div>

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, lazy, Suspense } from "react";
 import Header from "@/components/Header";
 import HeroSection from "@/components/HeroSection";
 import AboutSection from "@/components/AboutSection";
@@ -9,8 +9,10 @@ import BlogSection from "@/components/BlogSection";
 import ContactSection from "@/components/ContactSection";
 import FloatingWhatsApp from "@/components/FloatingWhatsApp";
 import Footer from "@/components/Footer";
-import MatrixRain from "@/components/MatrixRain";
 import SEO from "@/components/SEO";
+
+// Lazy load MatrixRain for better performance
+const MatrixRain = lazy(() => import("@/components/MatrixRain"));
 
 const Index = () => {
   const [seoData] = useState({
@@ -18,15 +20,20 @@ const Index = () => {
     description: 'Portfólio de Roberto Vicente da Silva, desenvolvedor web especializado em criar soluções digitais modernas e eficientes.'
   });
 
-  // Page visit tracking
+  // Page visit tracking - defer to after page load
   useEffect(() => {
-    import('@/lib/api-client').then(({ api }) => {
-      api.analytics.logPageVisit({
-        page: '/',
-        referrer: document.referrer || undefined,
-        userAgent: navigator.userAgent
-      }).catch(console.error);
-    });
+    // Defer analytics to not block initial render
+    const timer = setTimeout(() => {
+      import('@/lib/api-client').then(({ api }) => {
+        api.analytics.logPageVisit({
+          page: '/',
+          referrer: document.referrer || undefined,
+          userAgent: navigator.userAgent
+        }).catch(console.error);
+      });
+    }, 1000);
+
+    return () => clearTimeout(timer);
   }, []);
 
   return (
@@ -35,7 +42,9 @@ const Index = () => {
         title={seoData.title}
         description={seoData.description}
       />
-      <MatrixRain />
+      <Suspense fallback={<div className="fixed inset-0 bg-dark-navy z-0" />}>
+        <MatrixRain />
+      </Suspense>
       <Header />
       <main className="relative z-10">
         <HeroSection id="inicio" />
