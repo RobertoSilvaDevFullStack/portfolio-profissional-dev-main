@@ -49,11 +49,6 @@ const AdminLayout = () => {
       label: "Dashboard",
     },
     {
-      to: "/admin/content",
-      icon: <FileText className="h-5 w-5" />,
-      label: "Gerenciar Conteúdo",
-    },
-    {
       to: "/admin/blog",
       icon: <Newspaper className="h-5 w-5" />,
       label: "Gerenciar Blog",
