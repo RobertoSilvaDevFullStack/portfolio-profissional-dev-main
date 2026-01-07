@@ -16,7 +16,7 @@ export default defineConfig(() => ({
   },
   build: {
     // Optimize bundle
-    minify: 'terser',
+    minify: 'terser' as const,
     terserOptions: {
       compress: {
         drop_console: true, // Remove console.logs in production
