@@ -1,18 +1,20 @@
 import { useEffect, useState, lazy, Suspense } from "react";
 import Header from "@/components/Header";
 import HeroSection from "@/components/HeroSection";
-import AboutSection from "@/components/AboutSection";
-import ServicesSection from "@/components/ServicesSection";
-import SkillsSection from "@/components/SkillsSection";
-import PortfolioSection from "@/components/PortfolioSection";
-import BlogSection from "@/components/BlogSection";
-import ContactSection from "@/components/ContactSection";
 import FloatingWhatsApp from "@/components/FloatingWhatsApp";
 import Footer from "@/components/Footer";
 import SEO from "@/components/SEO";
+import IntersectionObserverWrapper from "@/components/IntersectionObserverWrapper";
+import { Skeleton } from "@/components/ui/skeleton";
 
-// Lazy load MatrixRain for better performance
+// Lazy load heavy components for better performance
 const MatrixRain = lazy(() => import("@/components/MatrixRain"));
+const AboutSection = lazy(() => import("@/components/AboutSection"));
+const ServicesSection = lazy(() => import("@/components/ServicesSection"));
+const SkillsSection = lazy(() => import("@/components/SkillsSection"));
+const PortfolioSection = lazy(() => import("@/components/PortfolioSection"));
+const BlogSection = lazy(() => import("@/components/BlogSection"));
+const ContactSection = lazy(() => import("@/components/ContactSection"));
 
 const Index = () => {
   const [seoData] = useState({
@@ -36,6 +38,15 @@ const Index = () => {
     return () => clearTimeout(timer);
   }, []);
 
+  const SectionSkeleton = () => (
+    <div className="py-20 px-4">
+      <div className="max-w-6xl mx-auto space-y-4">
+        <Skeleton className="h-12 w-64 mx-auto" />
+        <Skeleton className="h-64 w-full" />
+      </div>
+    </div>
+  );
+
   return (
     <div className="text-gray-200 font-sans antialiased">
       <SEO
@@ -48,12 +59,42 @@ const Index = () => {
       <Header />
       <main className="relative z-10">
         <HeroSection id="inicio" />
-        <AboutSection id="sobre" />
-        <ServicesSection id="servicos" />
-        <SkillsSection id="habilidades" />
-        <PortfolioSection id="projetos" />
-        <BlogSection id="blog" />
-        <ContactSection id="contato" />
+
+        <IntersectionObserverWrapper>
+          <Suspense fallback={<SectionSkeleton />}>
+            <AboutSection id="sobre" />
+          </Suspense>
+        </IntersectionObserverWrapper>
+
+        <IntersectionObserverWrapper>
+          <Suspense fallback={<SectionSkeleton />}>
+            <ServicesSection id="servicos" />
+          </Suspense>
+        </IntersectionObserverWrapper>
+
+        <IntersectionObserverWrapper>
+          <Suspense fallback={<SectionSkeleton />}>
+            <SkillsSection id="habilidades" />
+          </Suspense>
+        </IntersectionObserverWrapper>
+
+        <IntersectionObserverWrapper>
+          <Suspense fallback={<SectionSkeleton />}>
+            <PortfolioSection id="projetos" />
+          </Suspense>
+        </IntersectionObserverWrapper>
+
+        <IntersectionObserverWrapper>
+          <Suspense fallback={<SectionSkeleton />}>
+            <BlogSection id="blog" />
+          </Suspense>
+        </IntersectionObserverWrapper>
+
+        <IntersectionObserverWrapper>
+          <Suspense fallback={<SectionSkeleton />}>
+            <ContactSection id="contato" />
+          </Suspense>
+        </IntersectionObserverWrapper>
       </main>
       <FloatingWhatsApp />
       <Footer />
