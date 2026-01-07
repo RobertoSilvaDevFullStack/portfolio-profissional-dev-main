@@ -49,11 +49,6 @@ const AdminLayout = () => {
       label: "Dashboard",
     },
     {
-      to: "/admin/custom-dashboard",
-      icon: <Layout className="h-5 w-5" />,
-      label: "Dashboard Customizável",
-    },
-    {
       to: "/admin/content",
       icon: <FileText className="h-5 w-5" />,
       label: "Gerenciar Conteúdo",
