@@ -1,5 +1,7 @@
 import { Button } from '@/components/ui/button';
 import { useEffect, useState } from 'react';
+import { ArrowRight } from "lucide-react";
+import OptimizedImage from "@/components/OptimizedImage";
 
 interface HeroContent {
   hero_title: string;
@@ -8,7 +10,7 @@ interface HeroContent {
   hero_image_url: string;
 }
 
-const HeroSection = (props: React.HTMLAttributes<HTMLElement>) => {
+const HeroSection = ({ id }: { id?: string }) => {
   const [content, setContent] = useState<HeroContent | null>(null);
   const [loading, setLoading] = useState(true);
 
