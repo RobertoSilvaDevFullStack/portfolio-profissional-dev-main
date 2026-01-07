@@ -18,10 +18,15 @@ const Index = () => {
     description: 'Portfólio de Roberto Vicente da Silva, desenvolvedor web especializado em criar soluções digitais modernas e eficientes.'
   });
 
-  // Page visit tracking can be added later via analytics API
+  // Page visit tracking
   useEffect(() => {
-    // Optional: Log page visit
-    // api.analytics.logVisit({ page: '/' });
+    import('@/lib/api-client').then(({ api }) => {
+      api.analytics.logPageVisit({
+        page: '/',
+        referrer: document.referrer || undefined,
+        userAgent: navigator.userAgent
+      }).catch(console.error);
+    });
   }, []);
 
   return (
