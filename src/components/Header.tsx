@@ -18,6 +18,8 @@ const Header = () => {
   ];
 
   const getLinkHref = (hash: string) => {
+    // If we're on home page, use hash navigation
+    // If we're on another page, go to home with hash
     return isHomePage ? hash : `/${hash}`;
   };
 
