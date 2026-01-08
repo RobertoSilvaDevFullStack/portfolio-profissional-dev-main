@@ -20,6 +20,7 @@ import AdminLayout from "./components/admin/AdminLayout";
 import ProtectedRoute from "./components/ProtectedRoute";
 import { AuthProvider } from "./contexts/AuthContext";
 import BlogPost from "./pages/BlogPost";
+import CaseStudy from "./pages/CaseStudy";
 
 const queryClient = new QueryClient();
 
@@ -33,6 +34,7 @@ const App = () => (
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/blog/:slug" element={<BlogPost />} />
+            <Route path="/case-study/:slug" element={<CaseStudy />} />
             <Route path="/login" element={<Login />} />
 
             {/* Admin Routes */}
