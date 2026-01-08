@@ -17,9 +17,9 @@ const CaseStudyPage = () => {
             <div className="min-h-screen flex items-center justify-center">
                 <div className="text-center">
                     <h1 className="text-4xl font-bold mb-4">Case Study Not Found</h1>
-                    <Button onClick={() => navigate('/projetos')}>
+                    <Button onClick={() => navigate('/')}>
                         <ArrowLeft className="mr-2 h-4 w-4" />
-                        Back to Projects
+                        Back to Home
                     </Button>
                 </div>
             </div>
@@ -38,11 +38,11 @@ const CaseStudyPage = () => {
                 <div className="max-w-6xl mx-auto px-4 py-8">
                     <Button
                         variant="ghost"
-                        onClick={() => navigate('/projetos')}
+                        onClick={() => navigate('/')}
                         className="mb-8"
                     >
                         <ArrowLeft className="mr-2 h-4 w-4" />
-                        Back to Projects
+                        Back to Home
                     </Button>
                 </div>
 
@@ -276,7 +276,7 @@ const CaseStudyPage = () => {
                         </p>
                         <Button
                             size="lg"
-                            onClick={() => navigate('/contato')}
+                            onClick={() => navigate('/#contato')}
                             className="bg-light-cyan text-dark-navy hover:bg-light-cyan/90"
                         >
                             Get in Touch
