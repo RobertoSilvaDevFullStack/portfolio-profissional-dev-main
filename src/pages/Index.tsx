@@ -4,7 +4,6 @@ import HeroSection from "@/components/HeroSection";
 import FloatingWhatsApp from "@/components/FloatingWhatsApp";
 import Footer from "@/components/Footer";
 import SEO from "@/components/SEO";
-import IntersectionObserverWrapper from "@/components/IntersectionObserverWrapper";
 import { Skeleton } from "@/components/ui/skeleton";
 
 // Lazy load heavy components for better performance
@@ -60,41 +59,29 @@ const Index = () => {
       <main className="relative z-10">
         <HeroSection id="inicio" />
 
-        <IntersectionObserverWrapper>
-          <Suspense fallback={<SectionSkeleton />}>
-            <AboutSection id="sobre" />
-          </Suspense>
-        </IntersectionObserverWrapper>
+        <Suspense fallback={<SectionSkeleton />}>
+          <AboutSection id="sobre" />
+        </Suspense>
 
-        <IntersectionObserverWrapper>
-          <Suspense fallback={<SectionSkeleton />}>
-            <ServicesSection id="servicos" />
-          </Suspense>
-        </IntersectionObserverWrapper>
+        <Suspense fallback={<SectionSkeleton />}>
+          <ServicesSection id="servicos" />
+        </Suspense>
 
-        <IntersectionObserverWrapper>
-          <Suspense fallback={<SectionSkeleton />}>
-            <SkillsSection id="habilidades" />
-          </Suspense>
-        </IntersectionObserverWrapper>
+        <Suspense fallback={<SectionSkeleton />}>
+          <SkillsSection id="habilidades" />
+        </Suspense>
 
-        <IntersectionObserverWrapper>
-          <Suspense fallback={<SectionSkeleton />}>
-            <PortfolioSection id="projetos" />
-          </Suspense>
-        </IntersectionObserverWrapper>
+        <Suspense fallback={<SectionSkeleton />}>
+          <PortfolioSection id="projetos" />
+        </Suspense>
 
-        <IntersectionObserverWrapper>
-          <Suspense fallback={<SectionSkeleton />}>
-            <BlogSection id="blog" />
-          </Suspense>
-        </IntersectionObserverWrapper>
+        <Suspense fallback={<SectionSkeleton />}>
+          <BlogSection id="blog" />
+        </Suspense>
 
-        <IntersectionObserverWrapper>
-          <Suspense fallback={<SectionSkeleton />}>
-            <ContactSection id="contato" />
-          </Suspense>
-        </IntersectionObserverWrapper>
+        <Suspense fallback={<SectionSkeleton />}>
+          <ContactSection id="contato" />
+        </Suspense>
       </main>
       <FloatingWhatsApp />
       <Footer />
