@@ -3,17 +3,16 @@ import dyadComponentTagger from "@dyad-sh/react-vite-component-tagger";
 import react from "@vitejs/plugin-react-swc";
 import path from "path";
 
+// Conservative Vite configuration - avoiding problematic optimizations
 export default defineConfig(() => ({
   server: {
     host: "::",
     port: 8080,
   },
   plugins: [
-    dyadComponentTagger(),
+    dyadComponentTagger(), 
     react(),
-    // PWA temporarily disabled to fix build hanging issue
-    // Will re-enable after investigating the build problem
-    // VitePWA({...})
+    // NO PWA plugin - causes Railway build hangs
   ],
   resolve: {
     alias: {
@@ -21,7 +20,7 @@ export default defineConfig(() => ({
     },
   },
   build: {
-    // Optimize bundle
+    // Basic minification only
     minify: 'terser' as const,
     terserOptions: {
       compress: {
@@ -29,7 +28,7 @@ export default defineConfig(() => ({
         drop_debugger: true,
       },
     },
-    // Code splitting
+    // Simple code splitting - proven to work
     rollupOptions: {
       output: {
         manualChunks: {
@@ -38,7 +37,7 @@ export default defineConfig(() => ({
         },
       },
     },
-    // Chunk size warnings
+    // Conservative chunk size limit
     chunkSizeWarningLimit: 1000,
   },
 }));
