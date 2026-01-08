@@ -10,9 +10,8 @@ export default defineConfig(() => ({
     port: 8080,
   },
   plugins: [
-    dyadComponentTagger(), 
+    dyadComponentTagger(),
     react(),
-    // NO PWA plugin - causes Railway build hangs
   ],
   resolve: {
     alias: {
@@ -20,24 +19,28 @@ export default defineConfig(() => ({
     },
   },
   build: {
-    // Basic minification only
+    // Basic minification
     minify: 'terser' as const,
     terserOptions: {
       compress: {
-        drop_console: true, // Remove console.logs in production
+        drop_console: true,
         drop_debugger: true,
+        passes: 2, // Extra compression pass
+      },
+      mangle: {
+        safari10: true,
       },
     },
-    // Simple code splitting - proven to work
+    // Simple code splitting
     rollupOptions: {
       output: {
         manualChunks: {
           'react-vendor': ['react', 'react-dom', 'react-router-dom'],
           'ui-vendor': ['lucide-react'],
+          'supabase-vendor': ['@supabase/supabase-js'],
         },
       },
     },
-    // Conservative chunk size limit
     chunkSizeWarningLimit: 1000,
   },
 }));
