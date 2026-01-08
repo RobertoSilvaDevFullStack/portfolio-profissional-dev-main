@@ -222,7 +222,7 @@ const AboutSection = (props: React.HTMLAttributes<HTMLElement>) => {
         </div>
 
         {/* Differentials */}
-        <Card className="bg-gradient-to-r from-light-cyan/10 to-purple-500/10 border-light-cyan/30 mb-16">
+        <Card className="bg-gray-800 border-light-cyan/50 mb-16">
           <CardContent className="p-8 md:p-12">
             <h3 className="text-2xl md:text-3xl font-bold text-white text-center mb-8">
               O Que Me Torna Único
