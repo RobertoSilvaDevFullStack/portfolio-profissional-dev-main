@@ -4,18 +4,13 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import SEO from '@/components/SEO';
 import type { CaseStudy } from '@/types/caseStudy';
-
-// This will be replaced with actual data fetching
-const getCaseStudy = (slug: string): CaseStudy | null => {
-    // TODO: Fetch from database or import from data file
-    return null;
-};
+import { getCaseStudyBySlug } from '@/data/caseStudies';
 
 const CaseStudyPage = () => {
     const { slug } = useParams<{ slug: string }>();
     const navigate = useNavigate();
 
-    const caseStudy = getCaseStudy(slug || '');
+    const caseStudy = getCaseStudyBySlug(slug || '');
 
     if (!caseStudy) {
         return (
